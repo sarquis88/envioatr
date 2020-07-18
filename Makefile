@@ -4,6 +4,7 @@ CCFLAG := -Wall -Werror -pedantic -Wextra -Wconversion
 CPPFLAG = --enable=performance,portability,information,unusedFunction -q
 DBGFLAG := -g
 CCOBJFLAG := $(CCFLAG) -c
+DEPENDENCIES = src/
 
 # path macros
 BIN_PATH := bin
@@ -13,9 +14,6 @@ DBG_PATH := debug
 
 # compile macros
 TARGET_NAME := envioatr
-ifeq ($(OS),Windows_NT)
-	TARGET_NAME := $(addsuffix .exe,$(TARGET_NAME))
-endif
 TARGET := $(BIN_PATH)/$(TARGET_NAME)
 TARGET_DEBUG := $(DBG_PATH)/$(TARGET_NAME)
 MAIN_SRC := envioatr

@@ -6,9 +6,16 @@ int
 main() 
 {
     string source_path, target_path;
-    bool err;
     
-    err = false;
+    if( setup_connection() == SUCCES )
+        cout << endl << "Connection established" << endl;
+    else
+    {
+        cout << endl << "ERROR: something went wrong" << endl;;
+        perror("");
+        exit_rutine();
+        return FAILURE;
+    }
 
     file_name_input( &source_path );
     if( source_path.compare( EXIT_MSG ) == 0 )
@@ -23,26 +30,21 @@ main()
     {
         cout << endl << "ERROR: something went wrong" << endl;;
         perror("");
-        err = true;      
+        exit_rutine();
+        return FAILURE;
     }
     else
-    {
         cout << endl << "File has been moved succesfully" << endl;
-    }
 
     exit_rutine();
 
-    if( err )
-        return FAILURE;
-    else
-        return SUCCES;
+    return SUCCES;
 }
 
 void
 file_name_input( string *file_name )
 {
     cout << endl << "File name to transfer:" << endl;
-    
     do
     {
         cout << ">> ";  
