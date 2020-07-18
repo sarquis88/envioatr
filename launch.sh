@@ -1,1 +1,1 @@
-./bin/envioatr
+./bin/main.o

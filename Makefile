@@ -1,65 +1,12 @@
-# tool macros
 CC := g++
-CCFLAG := -Wall -Werror -pedantic -Wextra -Wconversion
+CCFLAG := -Wall -Werror -pedantic -Wextra -Wconversion -g
 CPPFLAG = --enable=performance,portability,information,unusedFunction -q
-DBGFLAG := -g
-CCOBJFLAG := $(CCFLAG) -c
-DEPENDENCIES = src/
 
-# path macros
-BIN_PATH := bin
-OBJ_PATH := obj
-SRC_PATH := src
-DBG_PATH := debug
+make:
+	cppcheck $(CPPFLAG) ./
+	$(CC) $(CCFLAG) src/main.cpp src/commons.cpp -o bin/main.o 
+	$(CC) $(CCFLAG) src/sender.cpp src/commons.cpp src/sender_connection.cpp -o bin/sender.o
+	$(CC) $(CCFLAG) src/receiver.cpp src/commons.cpp src/receiver_connection.cpp -o bin/receiver.o
 
-# compile macros
-TARGET_NAME := envioatr
-TARGET := $(BIN_PATH)/$(TARGET_NAME)
-TARGET_DEBUG := $(DBG_PATH)/$(TARGET_NAME)
-MAIN_SRC := envioatr
-
-# src files & obj files
-SRC := $(foreach x, $(SRC_PATH), $(wildcard $(addprefix $(x)/*,.c*)))
-OBJ := $(addprefix $(OBJ_PATH)/, $(addsuffix .o, $(notdir $(basename $(SRC)))))
-OBJ_DEBUG := $(addprefix $(DBG_PATH)/, $(addsuffix .o, $(notdir $(basename $(SRC)))))
-
-# clean files list
-DISTCLEAN_LIST := $(OBJ) \
-                  $(OBJ_DEBUG)
-CLEAN_LIST := $(TARGET) \
-			  $(TARGET_DEBUG) \
-			  $(DISTCLEAN_LIST)
-
-# default rule
-default: all
-
-# non-phony targets
-$(TARGET): $(OBJ)
-	$(CC) $(CCFLAG) -o $@ $?
-
-$(OBJ_PATH)/%.o: $(SRC_PATH)/%.c*
-	$(CC) $(CCOBJFLAG) -o $@ $<
-
-$(DBG_PATH)/%.o: $(SRC_PATH)/%.c*
-	$(CC) $(CCOBJFLAG) $(DBGFLAG) -o $@ $<
-
-$(TARGET_DEBUG): $(OBJ_DEBUG)
-	$(CC) $(CCFLAG) $(DBGFLAG) $? -o $@
-
-# phony rules
-.PHONY: all
-all: $(TARGET)
-	 cppcheck $(CPPFLAG) ./
-
-.PHONY: debug
-debug: $(TARGET_DEBUG)
-
-.PHONY: clean
 clean:
-	@echo CLEAN $(CLEAN_LIST)
-	@rm -f $(CLEAN_LIST)
-
-.PHONY: distclean
-distclean:
-	@echo CLEAN $(DISTCLEAN_LIST)
-	@rm -f $(DISTCLEAN_LIST)
+	rm -f bin/*
