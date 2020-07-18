@@ -2,52 +2,70 @@
 
 using namespace std;
 
-void file_name_input( char * );
-int move_file( char *, char * );
-void set_target_path( char *, char *, size_t );
+void file_name_input( string * );
+int move_file( string, string );
+void set_target_path( string *, string, size_t );
 
 int
 main() 
 {
-    char *source_path, *target_path;
+    string source_path, target_path;
+    bool err;
     
-    source_path = (char*) malloc( FILE_NAME_SIZE * sizeof(char) );
-    target_path = (char*) malloc( FILE_NAME_SIZE * sizeof(char) );
-    file_name_input( source_path );
-    set_target_path( target_path, source_path, strlen( source_path ) );
+    err = false;
+
+    file_name_input( &source_path );
+    set_target_path( &target_path, source_path, source_path.length());
 
     if( move_file( source_path, target_path ) == FAILURE )
     {
-        cout << endl << "ERROR: something went wrong" << endl;
-        free( source_path );
-        return FAILURE;        
+        cout << endl << "ERROR: something went wrong" << endl;;
+        perror("");
+        cout << endl;
+        err = true;      
+    }
+    else
+    {
+        cout << endl << "File has been moved succesfully" << endl << endl;
     }
 
-    free( source_path );
+    if( err )
+        return FAILURE;
+    else
+        return SUCCES;
 }
 
 void
-file_name_input( char *file_name )
+file_name_input( string *file_name )
 {
-    cout << endl << "File name to transfer:" << endl << ">> ";
-    cin >> file_name;
+    while( true )
+    {
+        cout << endl << "File name to transfer:" << endl << ">> ";
+        getline( cin, *file_name );
+        break;
+    }
 }
 
 int
-move_file( char * source_path, char * target_path )
+move_file( string source_path, string target_path )
 {
     FILE *source_file, *target_file;
-    char *buffer = (char*) malloc( BUFFER_SIZE * sizeof( char ) );
-    size_t end = 1;
+    char *buffer; 
+    size_t end;
 
-    source_file = fopen( source_path, "rb" );
+    source_file = fopen( source_path.c_str(), "rb" );
     if( source_file == NULL )
         return FAILURE;
 
-    target_file = fopen( target_path, "wb" );
+    target_file = fopen( target_path.c_str(), "wb" );
     if( target_file == NULL )
+    {
+        fclose( source_file );
         return FAILURE;
+    }        
     
+    buffer = (char*) malloc( BUFFER_SIZE * sizeof( char ) );
+    end = 1;
     while( end > 0 )
     {
         end = fread( (void*) buffer, sizeof( char ), 1, source_file ); 
@@ -56,27 +74,28 @@ move_file( char * source_path, char * target_path )
 
     fclose( source_file );
     fclose( target_file );
+    free(buffer);
     return SUCCES;
 }
 
 void
-set_target_path( char *target_path, char *source_path, size_t len )
+set_target_path( string *target_path, string source_path, size_t len )
 {
     int i, j, new_len;
+    string aux;
 
-    for( i = len - 1; i >= 0; i-- )
+    for( i = (int)len - 1; i >= 0; i-- )
     {
         if( source_path[i] == '/' )
             break;
     }
 
-    new_len = len - i;
+    new_len = (int)len - i;
 
-    char aux[ new_len ];
     for( j = 0; j < new_len; j++ )
     {
         aux[j] = source_path[ (i + 1) + j ];
     }
 
-    sprintf( target_path, "./resources/%s", aux);
+    *target_path = aux;
 }

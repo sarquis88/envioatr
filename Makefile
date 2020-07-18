@@ -1,6 +1,7 @@
 # tool macros
 CC := g++
-CCFLAG := # FILL: compile flags
+CCFLAG := -Wall -Werror -pedantic -Wextra -Wconversion
+CPPFLAG = --enable=performance,portability,information,unusedFunction -q
 DBGFLAG := -g
 CCOBJFLAG := $(CCFLAG) -c
 
@@ -50,6 +51,7 @@ $(TARGET_DEBUG): $(OBJ_DEBUG)
 # phony rules
 .PHONY: all
 all: $(TARGET)
+	 cppcheck $(CPPFLAG) ./
 
 .PHONY: debug
 debug: $(TARGET_DEBUG)
