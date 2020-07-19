@@ -9,4 +9,4 @@ make:
 	$(CC) $(CCFLAG) src/receiver.cpp src/commons.cpp src/receiver_connection.cpp -o bin/receiver.o
 
 clean:
-	rm -f bin/*
+	rm -f bin/*.o

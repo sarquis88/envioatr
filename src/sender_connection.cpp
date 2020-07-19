@@ -57,3 +57,15 @@ close_connection()
     close( sock_receiver );
     close( sock_sender );
 }
+
+int
+send_message( string message )
+{
+	int n;
+
+	n = (int) send( sock_receiver, message.c_str(), message.length(), 0 );
+	if ( n < 0 ) 
+		return FAILURE;
+	else
+		return SUCCES;
+}

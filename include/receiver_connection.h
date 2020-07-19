@@ -11,10 +11,9 @@ using namespace std;
 #define IP_SERVER   "192.168.100.3"
 #define PORT        20000
 
-#define BUFFER_SIZE     16
-
-#define PATH_TO_RECEIVE "./resources/received_file"
+#define BUFFER_SIZE     32
 
 int connect_to_sender( ); 
-int receive_from_sender();
+int receive_from_sender( string );
 void close_connection();
+int receive_message( string * );

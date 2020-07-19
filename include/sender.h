@@ -9,3 +9,4 @@ using namespace std;
 #define EXIT_MSG        "exit"
 
 void file_name_input    ( string *                  );
+string get_file_name    ( string, size_t );

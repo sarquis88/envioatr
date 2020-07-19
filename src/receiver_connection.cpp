@@ -1,5 +1,7 @@
 #include "../include/receiver_connection.h"
 
+using namespace std;
+
 int sock_sender;
 struct sockaddr_in sender_addr;
 struct hostent *sender_hostent;
@@ -21,9 +23,13 @@ connect_to_sender()
 }
 
 int
-receive_from_sender() 
+receive_from_sender( string file_name ) 
 {
-	FILE* file = fopen( PATH_TO_RECEIVE, "wb" );
+    string path;
+
+    path = "./resources/" + file_name;
+
+	FILE* file = fopen( path.c_str(), "wb" );
     size_t n;
     char *buffer;
 
@@ -46,4 +52,21 @@ void
 close_connection()
 {
     close( sock_sender );
+}
+
+int
+receive_message( string * message_buffer ) 
+{
+    char * buffer;
+    int n;
+
+	buffer = (char*)malloc( BUFFER_SIZE * sizeof(char) );
+	n = (int) recv( sock_sender, buffer, BUFFER_SIZE, 0 );
+	if ( n < 0 )
+        return FAILURE;
+
+    *message_buffer = string(buffer);
+    free( buffer );
+
+    return SUCCES;
 }
