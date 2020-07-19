@@ -27,13 +27,14 @@ receive_from_sender()
     size_t n;
     char *buffer;
 
-    buffer = (char*)malloc( BUFFER_SIZE * sizeof(char) );
-
     if(file != NULL) 
     {
+        buffer = (char*)malloc( BUFFER_SIZE * sizeof(char) );
+
         while( ( n = recv( sock_sender, buffer, 1, 0) ) > 0 )
             fwrite( buffer, sizeof(char), (size_t) n, file );
 
+        free( buffer );
         fclose( file );
         return SUCCES;
     }
