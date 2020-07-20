@@ -34,32 +34,45 @@ connect_to_sender()
 }
 
 int
-receive_from_sender( string *file_name, ssize_t file_size ) 
+receive_file_from_sender( string *file_name, ssize_t file_size ) 
 {
     string path;
     FILE *file;
-    char *buffer;
-    ssize_t n, partial_size;
 
     path = "./resources/" + *file_name;
 	file = fopen( path.c_str(), "wb" );
-    n = 0;
-    partial_size = 0;
 
     if( file != NULL ) 
     {
-        buffer = (char*)malloc( BUFFER_SIZE * sizeof(char) );
+        ssize_t partial_size = 0;
+        char *buffer = (char*)malloc( BUFFER_SIZE * sizeof(char) );
+        #if (LOG == 1)
+            int c = 0;
+        #endif
 
         while( partial_size < file_size )
         {
-            n = recv( r_sock_sender, buffer, 1, 0);
+            ssize_t n = recv( r_sock_sender, buffer, 1, 0);
             if( n <= 0 && partial_size < file_size )
                 return INTERRUPTION;
                 
             partial_size += n;
 
             fwrite( buffer, sizeof(char), (size_t) n, file );
+            
+            #if (LOG == 1)
+                double percentage = ( (double)partial_size / (double)file_size ) * 100;
+                if( c % 150 == 0 )   // print once in 150 times
+                    cout << '\r' << fixed << setprecision(0) << "Downloading... " <<
+                        round(percentage) << "%" << flush;
+                c++;
+            #endif
         }
+        #if (LOG == 1)
+            cout << '\r' << "                    " << flush;
+            cout << '\r' << "Downloaded 100%" << flush;
+        cout << endl;
+        #endif
 
         free( buffer );
         fclose( file );

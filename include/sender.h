@@ -1,8 +1,6 @@
 #include "commons.h"
 #include "sender_connection.h"
 
-#include <signal.h>
-
 using namespace std;
 
 #define FILE_NAME_SIZE  32
@@ -35,4 +33,12 @@ ssize_t get_file_size   ( string * );
     Interruption routine
     @param  (unknown, to keep the compiler happy)
 */
-void int_exit           ( int ) ;
+void int_exit           ( int );
+
+/*
+    Check file existance
+    @param  file path in string format
+    @return true if exists
+            false if not
+*/
+bool file_exists        ( string * );

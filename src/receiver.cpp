@@ -4,9 +4,11 @@ using namespace std;
 
 int main()
 {
+    /* Varbiales declaration */
     string file_name, file_size, buffer;
     int size, code;
 
+    /* Search of sender */
     cout << "Looking for sender..." << endl;
     connect_to_sender();
     code = receive_message( &buffer );
@@ -17,6 +19,7 @@ int main()
     }
     cout << "Sender founded" << endl;
 
+    /* Reception of file metadata */
     cout << "Receiving metadata..." << endl;
     code = receive_message( &file_name );
     if( code == FAILURE )
@@ -29,7 +32,6 @@ int main()
         interruption_routine();
         return SUCCES;
     }
-    
     code = receive_message( &file_size );
     if( code == FAILURE )
     {
@@ -43,9 +45,11 @@ int main()
     }
     cout << "Metadata received" << endl;
 
+    /* Reception of file */
     size = stoi( file_size );
-    cout << "Receiving " << file_name << " " << get_size_message( size ) << " from sender..." << endl;
-    code = receive_from_sender( &file_name, size );
+    cout << "Receiving " << '"' << file_name << '"' << " " << 
+            get_size_message( size ) << " from sender..." << endl;
+    code = receive_file_from_sender( &file_name, size );
     if( code == FAILURE )
     {
         error_routine();

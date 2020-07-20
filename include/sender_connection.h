@@ -1,10 +1,5 @@
 #include "commons.h"
 
-#include <sys/socket.h> 
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-
 using namespace std;
 
 #define IP_SERVER   "192.168.100.3"
@@ -30,7 +25,7 @@ void listen                     ( void );
     @return SUCCES on a succesfully sent
             FAILURE on case of an error
 */
-int send_to_receiver            ( string );
+int send_file_to_receiver            ( string );
 
 /*
     Close sockets connection

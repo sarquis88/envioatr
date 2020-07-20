@@ -1,18 +1,13 @@
 #include "commons.h"
 
-#include <sys/socket.h> 
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <unistd.h>
-#include <errno.h>
-
 using namespace std;
 
 #define IP_SERVER   "192.168.100.3"
 #define PORT        20000
 
-#define BUFFER_SIZE     32
+#define LOG         1
+
+#define BUFFER_SIZE 32
 
 /*
     Try to connect to the sender part
@@ -29,7 +24,7 @@ int connect_to_sender           ( void );
             FAILURE on case of an error
             INTERRUPTION on case of an interruption
 */
-int receive_from_sender         ( string *, ssize_t );
+int receive_file_from_sender         ( string *, ssize_t );
 
 /*
     Close the sender socket connection

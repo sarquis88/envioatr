@@ -1,7 +1,19 @@
 #include <iostream>
+#include <iomanip>
 #include <cstring>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cerrno>
+#include <cstdio>
+#include <csignal>
+#include <cmath>
+
+#include <arpa/inet.h>
+#include <netdb.h>
+
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/socket.h> 
+
+#include <unistd.h>
 
 #define SUCCES          0
 #define FAILURE         1

@@ -6,6 +6,10 @@ int
 main( int argc, char *argv[] ) 
 {
     string input;
+    struct sigaction sa;
+
+    sa.sa_handler = int_exit;
+	sigaction(SIGINT, &sa,  NULL);
 
     if( argc > 1)
         cout << "No input argument is considered" << endl;
@@ -31,4 +35,14 @@ main( int argc, char *argv[] )
         exit_routine();
         return FAILURE;
     }
+}
+
+void
+int_exit( int sig ) 
+{
+	if( sig > 0 ) 
+    {
+        exit_routine();
+        exit(SUCCES);
+	}
 }

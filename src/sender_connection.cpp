@@ -31,14 +31,13 @@ listen()
 }
 
 int 
-send_to_receiver( string file_path ) 
+send_file_to_receiver( string file_path ) 
 {
-	char * buffer;
 	FILE* file = fopen( file_path.c_str(), "rb" );
 
 	if ( file != NULL ) 
 	{
-		buffer = (char *)malloc( BUFFER_SIZE * sizeof( char ) );
+		char *buffer = (char *)malloc( BUFFER_SIZE * sizeof( char ) );
 
 		while( fread( buffer, sizeof(char), 1, file) > 0 )
 			send( s_sock_receiver, buffer, 1, 0);

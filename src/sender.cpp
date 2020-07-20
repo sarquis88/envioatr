@@ -4,17 +4,16 @@ using namespace std;
 
 int
 main() 
-{
-    string source_path, target_path, keep_str;
-    ssize_t file_size;
+{   /* Variables declarations */
     bool keep;
     struct sigaction sa;
 
+    /* Variables initialization */
     sa.sa_handler = int_exit;
 	sigaction(SIGINT, &sa,  NULL);
-    
     keep = false;
     
+    /* Configuring connection */
     cout << "Establishing connection..." << endl;
     if( setup_connection() == SUCCES )
         cout << "Connection established" << endl;
@@ -24,11 +23,18 @@ main()
         return FAILURE;
     }
 
+    /* Program loop initialization */
     do
     {
+        /* Variables declarations */
+        string source_path, keep_str;
+        ssize_t file_size;
+
+        /* Connected and waiting for receiver */
         cout << "Waiting for receiver..." << endl;
         listen();
         
+        /* Connection established with receiver */
         cout << "Receiver founded" << endl;
         if( send_message( HANDSHAKE_MSG ) == FAILURE )
         {
@@ -36,8 +42,16 @@ main()
             return FAILURE;
         }
 
+        /* File selection and name transmission */
         cout << "File name to transfer:" << endl;
-        user_input( &source_path );
+        while( true )
+        {
+            user_input( &source_path );
+            if( file_exists( &source_path ) )
+                break;
+            else
+                cout << "File doesn't exists, try again:" << endl;
+        }
 
         if( send_message( get_file_name( source_path, source_path.length() ) ) == FAILURE )
         {
@@ -45,6 +59,7 @@ main()
             return FAILURE;
         }
         
+        /* Files name transmission */
         file_size = get_file_size( &source_path );
         if( file_size <= 0 )
         {
@@ -57,8 +72,8 @@ main()
             return FAILURE;
         }
         
-
-        if( send_to_receiver( source_path ) == FAILURE )
+        /* File transmission */
+        if( send_file_to_receiver( source_path ) == FAILURE )
         {
             error_routine();
             return FAILURE;
@@ -66,6 +81,7 @@ main()
         else
             cout << "File has been sended" << endl;
 
+        /* Ask for continuing */
         while( true )
         {
             cout << endl << "Do you want to send more files?[y/n]" << endl;
@@ -84,8 +100,8 @@ main()
         
     } while( keep );
 
+    /* End of sender program */
     close_sender_connection();
-
     exit_routine();
 
     return SUCCES;
@@ -151,4 +167,11 @@ int_exit( int sig )
     close_sender_connection();
     exit_routine();
 	exit(SUCCES);
+}
+
+bool
+file_exists( string *file_path )
+{
+    struct stat stat_struct;
+    return ( stat( file_path->c_str(), &stat_struct) == 0 ); 
 }
