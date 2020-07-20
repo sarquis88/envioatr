@@ -73,6 +73,7 @@ main()
         }
         
         /* File transmission */
+        cout << "Sending file..." << endl;
         if( send_file_to_receiver( source_path ) == FAILURE )
         {
             error_routine();

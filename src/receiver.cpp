@@ -75,11 +75,13 @@ get_size_message( int size )
     string message;
 
     if( size < 1024 )
-        message = to_string( size ) + "[b]";
-    else if( size < 1048576 )
-        message = to_string( size / 1024 ) + "[Kb]";
+        message = to_string( ( size ) ) + "[b]";
+    else if( size < BYTES_IN_MEGA )
+        message = to_string( (double) size / BYTES_IN_KILO ) + "[Kb]";
+    else if ( size < BYTES_IN_GIGA )
+        message = to_string( (double) size / BYTES_IN_MEGA ) + "[Mb]";
     else
-        message = to_string( size / 1048576 ) + "[Mb]";
+        message = to_string( (double) size / BYTES_IN_GIGA ) + "[Gb]";
 
     return message;
 }

@@ -1,2 +1,2 @@
 # envioatr
-Envío de archivos en red local
+Local network file tranmission through sockets

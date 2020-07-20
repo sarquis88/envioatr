@@ -22,6 +22,10 @@
 #define HANDSHAKE_MSG   "ACK"
 #define INT_MSG         "INT"
 
+#define BYTES_IN_KILO   1024
+#define BYTES_IN_MEGA   1048576
+#define BYTES_IN_GIGA   1073741824
+
 /* 
     Routine for exiting the program 
 */
