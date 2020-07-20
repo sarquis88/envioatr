@@ -5,50 +5,62 @@ using namespace std;
 int main()
 {
     string file_name, file_size, buffer;
-    int size;
+    int size, code;
 
     cout << "Looking for sender..." << endl;
     connect_to_sender();
-    if( receive_message( &buffer ) == FAILURE )
+    code = receive_message( &buffer );
+    if( code == FAILURE )
     {
-        cout << endl << "ERROR: something went wrong" << endl;;
-        perror("");
-        exit_rutine();
+        error_routine();
         return FAILURE;
     }
     cout << "Sender founded" << endl;
 
     cout << "Receiving metadata..." << endl;
-    if( receive_message( &file_name ) == FAILURE )
+    code = receive_message( &file_name );
+    if( code == FAILURE )
     {
-        cout << endl << "ERROR: something went wrong" << endl;;
-        perror("");
-        exit_rutine();
+        error_routine();
         return FAILURE;
     }
-    if( receive_message( &file_size ) == FAILURE )
+    else if( code == INTERRUPTION )
     {
-        cout << endl << "ERROR: something went wrong" << endl;;
-        perror("");
-        exit_rutine();
+        interruption_routine();
+        return SUCCES;
+    }
+    
+    code = receive_message( &file_size );
+    if( code == FAILURE )
+    {
+        error_routine();
         return FAILURE;
+    }
+    else if( code == INTERRUPTION )
+    {
+        interruption_routine();
+        return SUCCES;
     }
     cout << "Metadata received" << endl;
 
     size = stoi( file_size );
     cout << "Receiving " << file_name << " " << get_size_message( size ) << " from sender..." << endl;
-    if( receive_from_sender( &file_name, size ) == FAILURE )
+    code = receive_from_sender( &file_name, size );
+    if( code == FAILURE )
     {
-        cout << endl << "ERROR: something went wrong" << endl;;
-        perror("");
-        exit_rutine();
+        error_routine();
         return FAILURE;
+    }
+    else if( code == INTERRUPTION )
+    {
+        interruption_routine();
+        return SUCCES;
     }
     else
     {
         cout << "File received" << endl;
         close_receiver_connection();
-        exit_rutine();
+        exit_routine();
         return SUCCES;
     }
 }

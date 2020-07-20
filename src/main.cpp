@@ -20,7 +20,7 @@ main( int argc, char *argv[] )
     else
     {
         cout << "Bad answer" << endl;
-        exit_rutine();
+        exit_routine();
         return FAILURE;
     }
 
@@ -28,7 +28,7 @@ main( int argc, char *argv[] )
     {
         cout << endl << "ERROR: something went wrong" << endl;;
         perror("");
-        exit_rutine();
+        exit_routine();
         return FAILURE;
     }
 }

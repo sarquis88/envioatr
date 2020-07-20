@@ -8,6 +8,10 @@ main()
     string source_path, target_path, keep_str;
     ssize_t file_size;
     bool keep;
+    struct sigaction sa;
+
+    sa.sa_handler = int_exit;
+	sigaction(SIGINT, &sa,  NULL);
     
     keep = false;
     
@@ -16,9 +20,7 @@ main()
         cout << "Connection established" << endl;
     else
     {
-        cout << "ERROR: something went wrong" << endl;;
-        perror("");
-        exit_rutine();
+        error_routine();
         return FAILURE;
     }
 
@@ -30,9 +32,7 @@ main()
         cout << "Receiver founded" << endl;
         if( send_message( HANDSHAKE_MSG ) == FAILURE )
         {
-            cout << "ERROR: something went wrong" << endl;;
-            perror("");
-            exit_rutine();
+            error_routine();
             return FAILURE;
         }
 
@@ -41,34 +41,26 @@ main()
 
         if( send_message( get_file_name( source_path, source_path.length() ) ) == FAILURE )
         {
-            cout << "ERROR: something went wrong" << endl;;
-            perror("");
-            exit_rutine();
+            error_routine();
             return FAILURE;
         }
         
         file_size = get_file_size( &source_path );
         if( file_size <= 0 )
         {
-            cout << "ERROR: something went wrong" << endl;;
-            perror("");
-            exit_rutine();
+            error_routine();
             return FAILURE;
         }
         else if( send_message( to_string( file_size ) ) == FAILURE )
         {
-            cout << "ERROR: something went wrong" << endl;;
-            perror("");
-            exit_rutine();
+            error_routine();
             return FAILURE;
         }
         
 
         if( send_to_receiver( source_path ) == FAILURE )
         {
-            cout << "ERROR: something went wrong" << endl;;
-            perror("");
-            exit_rutine();
+            error_routine();
             return FAILURE;
         }
         else
@@ -94,7 +86,7 @@ main()
 
     close_sender_connection();
 
-    exit_rutine();
+    exit_routine();
 
     return SUCCES;
 }
@@ -147,4 +139,16 @@ get_file_size( string *file_path )
     }
 
     return size;
+}
+
+void
+int_exit( int sig ) 
+{
+	if( sig > 0 ) 
+    {
+		send_message( INT_MSG );
+	}
+    close_sender_connection();
+    exit_routine();
+	exit(SUCCES);
 }
