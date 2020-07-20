@@ -14,6 +14,6 @@ using namespace std;
 #define BUFFER_SIZE     32
 
 int connect_to_sender( ); 
-int receive_from_sender( string );
-void close_connection();
+int receive_from_sender( string *, ssize_t );
+void close_receiver_connection();
 int receive_message( string * );

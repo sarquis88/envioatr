@@ -15,5 +15,5 @@ using namespace std;
 int setup_connection( ); 
 void listen();
 int send_to_receiver( string );
-void close_connection();
+void close_sender_connection();
 int send_message( string );
