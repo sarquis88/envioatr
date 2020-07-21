@@ -3,9 +3,6 @@
 using namespace std;
 
 #define IP_SERVER   "192.168.100.3"
-#define PORT        20000
-
-#define BUFFER_SIZE     16
 
 /*
     Configuration of the local socket
@@ -16,8 +13,9 @@ int setup_connection            ( void );
 
 /*
     Waiting for the receiver
+    @return address of the receiver founded
 */
-void listen                     ( void );
+string listen                   ( void );
 
 /*
     Sent of file to receiver part
@@ -25,7 +23,7 @@ void listen                     ( void );
     @return SUCCES on a succesfully sent
             FAILURE on case of an error
 */
-int send_file_to_receiver            ( string );
+int send_file_to_receiver       ( string );
 
 /*
     Close sockets connection
@@ -33,10 +31,11 @@ int send_file_to_receiver            ( string );
 void close_sender_connection    ( void );
 
 /*
-    Sent of message to the receiver part
-    @param  message in string format
-    @return SUCCES on a succesfully download
-            FAILURE on case of an error
-            INTERRUPTION on case of an interruptio
+    Send message to the receiver
 */
-int send_message                ( string );
+int send_message_to_receiver    ( string );
+
+/*
+    Reception of message from the receiver
+*/
+int receive_message_from_receiver   ( string * );

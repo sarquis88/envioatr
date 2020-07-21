@@ -7,11 +7,11 @@ struct sockaddr_in r_sender_addr;
 struct hostent *r_sender_hostent;
 
 int
-connect_to_sender() 
+connect_to_sender( string * sender_ip) 
 {
     int err;
 
-    r_sender_hostent = gethostbyname( IP_SERVER );
+    r_sender_hostent = gethostbyname( sender_ip->c_str() );
 	r_sock_sender = socket( AF_INET, SOCK_STREAM, 0 );
 	memset( (char *) &r_sender_addr, '0', sizeof(r_sender_addr) );
 	r_sender_addr.sin_family = AF_INET;
@@ -88,22 +88,51 @@ close_receiver_connection()
     close( r_sock_sender );
 }
 
-int
-receive_message( string * message_buffer ) 
+bool
+validate_address( string * address )
 {
-    char * buffer;
-    int n;
+    regex e;
 
-	buffer = (char*)malloc( BUFFER_SIZE * sizeof(char) );
-	n = (int) recv( r_sock_sender, buffer, BUFFER_SIZE, 0 );
-	if ( n < 0 )
-        return FAILURE;
+    e = ("(.*)\\.(.*)\\.(.*)\\.(.*)");
 
-    *message_buffer = string(buffer);
-    free( buffer );
+    if( regex_match( address->c_str(), e ) )
+    {
+        int i;
+        
+        for( i = 1; i < 5; i++ )
+        {
+            string group, result;
+            long value;
+            size_t j;
 
-    if( message_buffer->compare( INT_MSG ) == 0 )
-        return INTERRUPTION;
-    else
-        return SUCCES;
+            group = "$" + to_string(i);
+            result = regex_replace( address->c_str(), e, group.c_str() );
+
+            for( j = 0; j < result.length(); j++ )
+            {
+                if( result[j] < 48 || result[j] > 57 )
+                    return false;
+            }
+
+            value = strtol( result.c_str(), NULL, 10 );
+
+            if( value > 255 || value < 0 )
+                return false;
+        }
+        return true;
+    }
+    else 
+        return false;
+}
+
+int
+send_message_to_sender( string message )
+{
+	return send_message( message, r_sock_sender );
+}
+
+int
+receive_message_from_sender( string * buffer )
+{
+	return receive_message( buffer, r_sock_sender );
 }

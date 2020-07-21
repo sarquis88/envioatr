@@ -27,16 +27,17 @@ main()
     do
     {
         /* Variables declarations */
-        string source_path, keep_str;
+        string source_path, buffer, receiver_address;
         ssize_t file_size;
+        int code;
 
         /* Connected and waiting for receiver */
         cout << "Waiting for receiver..." << endl;
-        listen();
+        receiver_address = listen();
         
         /* Connection established with receiver */
-        cout << "Receiver founded" << endl;
-        if( send_message( HANDSHAKE_MSG ) == FAILURE )
+        cout << "Receiver founded: " << receiver_address << endl;
+        if( send_message_to_receiver( string(1, HANDSHAKE_MSG ) ) == FAILURE )
         {
             error_routine();
             return FAILURE;
@@ -53,7 +54,7 @@ main()
                 cout << "File doesn't exists, try again:" << endl;
         }
 
-        if( send_message( get_file_name( source_path, source_path.length() ) ) == FAILURE )
+        if( send_message_to_receiver( get_file_name( source_path, source_path.length() ) ) == FAILURE )
         {
             error_routine();
             return FAILURE;
@@ -66,33 +67,56 @@ main()
             error_routine();
             return FAILURE;
         }
-        else if( send_message( to_string( file_size ) ) == FAILURE )
+        else if( send_message_to_receiver( to_string( file_size ) ) == FAILURE )
         {
             error_routine();
             return FAILURE;
         }
-        
-        /* File transmission */
-        cout << "Sending file..." << endl;
-        if( send_file_to_receiver( source_path ) == FAILURE )
+
+        /* Waits for acceptation */
+        cout << "Waiting for confirmation from receiver..." << endl;
+        code = receive_message_from_receiver( &buffer );
+        if( code == FAILURE )
         {
             error_routine();
             return FAILURE;
+        }
+        else if( code == INTERRUPTION )
+        {
+            interruption_routine();
+            return SUCCES;
         }
         else
-            cout << "File has been sended" << endl;
+        {
+            if( buffer.at(0) == POSITIVE_MSG )
+            {
+                /* File transmission */
+                cout << "Sending file..." << endl;
+                if( send_file_to_receiver( source_path ) == FAILURE )
+                {
+                    error_routine();
+                    return FAILURE;
+                }
+                else
+                    cout << "File has been sended" << endl;
+            }
+            else if( buffer.at(0) == NEGATIVE_MSG )
+            {
+                cout << "Receiver has declined the file" << endl;
+            }
+        }
 
         /* Ask for continuing */
         while( true )
         {
             cout << endl << "Do you want to send more files?[y/n]" << endl;
-            user_input( &keep_str );
-            if( keep_str[0] == 'y' )
+            user_input( &buffer );
+            if( buffer[0] == 'y' )
             {
                 keep = true;
                 break;
             }
-            else if( keep_str[0] == 'n' )
+            else if( buffer[0] == 'n' )
             {
                 keep = false;
                 break;
@@ -106,16 +130,6 @@ main()
     exit_routine();
 
     return SUCCES;
-}
-
-void
-user_input( string *input_buffer )
-{
-    do
-    {
-        cout << ">> ";  
-        getline( cin, *input_buffer );
-    } while( input_buffer->empty() );
 }
 
 string
@@ -163,7 +177,7 @@ int_exit( int sig )
 {
 	if( sig > 0 ) 
     {
-		send_message( INT_MSG );
+		send_message_to_receiver( to_string(INT_MSG) );
 	}
     close_sender_connection();
     exit_routine();

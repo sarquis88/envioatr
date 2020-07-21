@@ -4,15 +4,8 @@
 using namespace std;
 
 #define FILE_NAME_SIZE  32
-#define BUFFER_SIZE     16
 
 #define EXIT_MSG        "exit"
-
-/*
-    Input stream for the user
-    @param  buffer to store de input string
-*/
-void user_input         ( string * );
 
 /*
     Parse file's name by path

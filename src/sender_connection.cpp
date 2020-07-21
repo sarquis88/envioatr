@@ -22,12 +22,14 @@ setup_connection()
         return SUCCES;
 }
 
-void
+string
 listen()
 {
     listen( s_sock_sender, 5 );
 	s_receiver_len = sizeof( s_receiver_addr );
 	s_sock_receiver = accept( s_sock_sender, (struct sockaddr *) &s_receiver_addr, &s_receiver_len );
+
+	return ( inet_ntoa( s_receiver_addr.sin_addr ) );
 }
 
 int 
@@ -58,13 +60,13 @@ close_sender_connection()
 }
 
 int
-send_message( string message )
+send_message_to_receiver( string message )
 {
-	int n;
+	return send_message( message, s_sock_receiver );
+}
 
-	n = (int) send( s_sock_receiver, message.c_str(), message.length(), 0 );
-	if ( n < 0 ) 
-		return FAILURE;
-	else
-		return SUCCES;
+int
+receive_message_from_receiver( string * buffer )
+{
+	return receive_message( buffer, s_sock_receiver );
 }
