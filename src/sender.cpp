@@ -53,14 +53,14 @@ main()
             else
                 cout << "File doesn't exists, try again:" << endl;
         }
-
         if( send_message_to_receiver( get_file_name( source_path, source_path.length() ) ) == FAILURE )
         {
             error_routine();
             return FAILURE;
         }
+        receive_message_from_receiver( &buffer );
         
-        /* Files name transmission */
+        /* Files size transmission */
         file_size = get_file_size( &source_path );
         if( file_size <= 0 )
         {
@@ -72,6 +72,7 @@ main()
             error_routine();
             return FAILURE;
         }
+        receive_message_from_receiver( &buffer );
 
         /* Waits for acceptation */
         cout << "Waiting for confirmation from receiver..." << endl;

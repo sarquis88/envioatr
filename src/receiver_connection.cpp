@@ -39,7 +39,7 @@ receive_file_from_sender( string *file_name, ssize_t file_size )
     string path;
     FILE *file;
 
-    path = "./resources/" + *file_name;
+    path = "./receptions/" + *file_name;
 	file = fopen( path.c_str(), "wb" );
 
     if( file != NULL ) 

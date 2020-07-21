@@ -1,5 +1,7 @@
 #include <iostream>
 #include <iomanip>
+#include <fstream>
+
 #include <regex>
 
 #include <cstring>
@@ -21,10 +23,10 @@
 #define FAILURE         1
 #define INTERRUPTION    2
 
-#define HANDSHAKE_MSG   ( (char) '0' )
-#define INT_MSG         ( (char) '1' )
-#define POSITIVE_MSG    ( (char) '2' )
-#define NEGATIVE_MSG    ( (char) '3' )
+#define HANDSHAKE_MSG   ( (char) 'A' )
+#define INT_MSG         ( (char) 'B' )
+#define POSITIVE_MSG    ( (char) 'C' )
+#define NEGATIVE_MSG    ( (char) 'D' )
 
 #define PORT            2000
 

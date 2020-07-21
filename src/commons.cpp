@@ -53,7 +53,7 @@ receive_message( string * message_buffer, int socket )
 
 	buffer = (char*)malloc( BUFFER_SIZE * sizeof(char) );
 	n = (int) recv( socket, buffer, BUFFER_SIZE, 0 );
-	if ( n < 0 )
+	if ( n <= 0 )
         return FAILURE;
 
     *message_buffer = string(buffer);
