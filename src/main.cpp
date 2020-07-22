@@ -3,13 +3,12 @@
 using namespace std;
 
 int
-main( int argc, char *argv[] ) 
+main( ) 
 {
     string input;
     struct sigaction sa;
-    bool keep, fork;
+    bool keep;
 
-    fork = false;
     keep = false;
 
     sa.sa_handler = int_exit;
@@ -24,9 +23,6 @@ main( int argc, char *argv[] )
 
     cout << endl << "Hello " << input << endl;
 
-    if( argc > 1)
-        cout << "No input argument is considered" << endl;
-
     do 
     {
         cout << endl    << "Choose an option:" << endl 
@@ -40,14 +36,12 @@ main( int argc, char *argv[] )
         switch ( input[0] )
         {
             case SENDER_CODE:
-                input = SENDER_BIN;
+                launch_sender();
                 keep = false;
-                fork = true;
                 break;
             case RECEIVER_CODE:
-                input = RECEIVER_BIN;
+                launch_receiver();
                 keep = false;
-                fork = true;
                 break;
             case CLEAN_CODE:
                 if( clean_reception_folder() )
@@ -79,17 +73,6 @@ main( int argc, char *argv[] )
                 break;
         }
     } while( keep );
-
-    if( fork )
-    {
-        cout << endl;
-        if( execv( input.c_str(), argv ) == -1 ) 
-        {
-            error_routine();
-            exit_routine();
-            return FAILURE;
-        }
-    }
 
     return SUCCES;
 }

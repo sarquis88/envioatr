@@ -8,6 +8,11 @@ using namespace std;
 #define EXIT_MSG        "exit"
 
 /*
+    Launch sender
+*/
+int launch_sender       ( void );
+
+/*
     Parse file's name by path
     @param  path of the file
             length of the path
@@ -21,12 +26,6 @@ string get_file_name    ( string, size_t );
     @return file's size in ssize_t format
 */
 ssize_t get_file_size   ( string );
-
-/*
-    Interruption routine
-    @param  (unknown, to keep the compiler happy)
-*/
-void int_exit           ( int );
 
 /*
     Check file existance

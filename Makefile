@@ -1,22 +1,61 @@
 CC := g++
-CCFLAG := -std=c++17 -Wall -Werror -pedantic -Wextra -Wconversion -g
+CCFLAG := -std=c++17 -Wall -Werror -pedantic -Wextra -Wconversion
 CPPFLAG = --enable=all --suppress=missingIncludeSystem -q
+DBGFLAG := -g
+CCOBJFLAG := $(CCFLAG) -c
 
-make:
-	@make main
-	@make sender
-	@make receiver
-main:
-	@$(CC) $(CCFLAG) src/main.cpp src/commons.cpp -o bin/main.o 
-	@printf "main.cpp compiled\n"
-sender:
-	@$(CC) $(CCFLAG) src/sender.cpp src/commons.cpp src/sender_connection.cpp -o bin/sender.o
-	@printf "sender.cpp compiled\n"
-receiver:
-	@$(CC) $(CCFLAG) src/receiver.cpp src/commons.cpp src/receiver_connection.cpp -o bin/receiver.o
-	@printf "receiver.cpp compiled\n"
+BIN_PATH := bin
+OBJ_PATH := obj
+SRC_PATH := src
+DBG_PATH := debug
+
+TARGET_NAME := envioatr
+ifeq ($(OS),Windows_NT)
+	TARGET_NAME := $(addsuffix .exe,$(TARGET_NAME))
+endif
+TARGET := $(BIN_PATH)/$(TARGET_NAME)
+TARGET_DEBUG := $(DBG_PATH)/$(TARGET_NAME)
+
+SRC := $(foreach x, $(SRC_PATH), $(wildcard $(addprefix $(x)/*,.c*)))
+OBJ := $(addprefix $(OBJ_PATH)/, $(addsuffix .o, $(notdir $(basename $(SRC)))))
+OBJ_DEBUG := $(addprefix $(DBG_PATH)/, $(addsuffix .o, $(notdir $(basename $(SRC)))))
+
+DISTCLEAN_LIST := $(OBJ) \
+                  $(OBJ_DEBUG)
+CLEAN_LIST := $(TARGET) \
+			  $(TARGET_DEBUG) \
+			  $(DISTCLEAN_LIST)
+
+default: all
+
+$(TARGET): $(OBJ)
+	@$(CC) $(CCFLAG) -o $@ $?
+
+$(OBJ_PATH)/%.o: $(SRC_PATH)/%.c*
+	@printf "Compiling $@...\n"
+	@$(CC) $(CCOBJFLAG) -o $@ $<
+	@printf "$@ compiled\n"
+
+$(DBG_PATH)/%.o: $(SRC_PATH)/%.c*
+	@printf "Compiling $@...\n"
+	@$(CC) $(CCOBJFLAG) $(DBGFLAG) -o $@ $<
+	@printf "$@ compiled\n"
+
+$(TARGET_DEBUG): $(OBJ_DEBUG)
+	@$(CC) $(CCFLAG) $(DBGFLAG) $? -o $@
+
+.PHONY: all
+all: $(TARGET)
+
+.PHONY: debug
+debug: $(TARGET_DEBUG)
+
+.PHONY: clean
 clean:
-	@rm -f bin/*.o
-check:
-	@cppcheck $(CPPFLAG) ./
-	@printf "Cppcheck passed\n"
+	@echo CLEAN $(CLEAN_LIST)
+	@rm -f $(CLEAN_LIST)
+
+.PHONY: distclean
+distclean:
+	@echo CLEAN $(DISTCLEAN_LIST)
+	@rm -f $(DISTCLEAN_LIST)

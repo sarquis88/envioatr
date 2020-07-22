@@ -5,6 +5,11 @@ using namespace std;
 
 #define LAST_SENDER_ADDRESS_FILE    "./resources/last_sender_address.txt"
 
+/*
+    Launch receiver
+*/
+int launch_receiver         ( void );
+
 /* 
     Create a message for printing the size of a file 
     @param size of the file in int format   

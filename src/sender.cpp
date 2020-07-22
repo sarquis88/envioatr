@@ -3,15 +3,13 @@
 using namespace std;
 
 int
-main() 
-{   /* Variables declarations */
+launch_sender() 
+{   
+    /* Variables declarations */
     bool keep;
-    struct sigaction sa;
     string buffer_A, buffer_B;
 
     /* Variables initialization */
-    sa.sa_handler = int_exit;
-	sigaction(SIGINT, &sa,  NULL);
     keep = false;
     
     /* Configuring connection */
@@ -169,19 +167,6 @@ get_file_size( string file_path )
     }
 
     return size;
-}
-
-void
-int_exit( int sig ) 
-{
-	if( sig > 0 ) 
-    {
-        string buffer = string( 1, INT_MSG );
-		send_message_to_receiver( &buffer );
-	}
-    close_sender_connection();
-    exit_routine();
-	exit(SUCCES);
 }
 
 bool

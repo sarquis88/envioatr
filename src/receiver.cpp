@@ -2,7 +2,8 @@
 
 using namespace std;
 
-int main()
+int 
+launch_receiver()
 {
     bool keep;
 
