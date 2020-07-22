@@ -36,3 +36,18 @@ int get_host_name           ( string * );
     Set host name to host_name.txt
 */
 int set_host_name           ( string * );
+
+/* 
+    Routine for exiting the program 
+*/
+void exit_routine            ( void );
+
+/* 
+    Routine for handle errors in the program 
+*/
+void error_routine           ( void );
+
+/*
+    Routine for handle interruptions in the program
+*/
+void interruption_routine    ( void );

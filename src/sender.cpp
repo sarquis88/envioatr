@@ -13,14 +13,11 @@ launch_sender()
     keep = false;
     
     /* Configuring connection */
-    cout << "Establishing connection..." << endl;
+    cout << endl << "Establishing connection..." << endl;
     if( setup_connection( &buffer_A ) == SUCCES )
         cout << "Connection established in " << buffer_A << endl;
     else
-    {
-        error_routine();
         return FAILURE;
-    }
 
     /* Program loop initialization */
     do
@@ -49,40 +46,25 @@ launch_sender()
         }
         buffer_B = get_file_name( buffer_A, buffer_A.length() );
         if( send_message_to_receiver( &buffer_B ) == FAILURE )
-        {
-            error_routine();
             return FAILURE;
-        }
         receive_message_from_receiver( &buffer_B );
         
         /* Files size transmission */
         size = get_file_size( buffer_A );
         buffer_B = to_string( size );
         if( size <= 0 )
-        {
-            error_routine();
             return FAILURE;
-        }
         else if( send_message_to_receiver( &buffer_B ) == FAILURE )
-        {
-            error_routine();
             return FAILURE;
-        }
         receive_message_from_receiver( &buffer_B );
 
         /* Waits for acceptation */
         cout << "Waiting for confirmation from receiver..." << endl;
         code = receive_message_from_receiver( &buffer_B );
         if( code == FAILURE )
-        {
-            error_routine();
             return FAILURE;
-        }
         else if( code == INTERRUPTION )
-        {
-            interruption_routine();
-            return SUCCES;
-        }
+            return INTERRUPTION;
         else
         {
             if( buffer_B.at(0) == POSITIVE_MSG )
@@ -90,10 +72,7 @@ launch_sender()
                 /* File transmission */
                 cout << "Sending file..." << endl;
                 if( send_file_to_receiver( buffer_A ) == FAILURE )
-                {
-                    error_routine();
                     return FAILURE;
-                }
                 else
                     cout << "File has been sended" << endl;
             }
@@ -124,7 +103,6 @@ launch_sender()
 
     /* End of sender program */
     close_sender_connection();
-    exit_routine();
 
     return SUCCES;
 }

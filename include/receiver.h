@@ -31,3 +31,8 @@ int get_last_sender_address ( string * buffer );
             FAILURE in other case
 */
 int set_last_sender_address ( string * address );
+
+/* 
+    Delete interrupted file
+*/
+void delete_corrupt_file    ( string * path );

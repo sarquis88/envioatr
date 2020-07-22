@@ -34,12 +34,10 @@ $(TARGET): $(OBJ)
 $(OBJ_PATH)/%.o: $(SRC_PATH)/%.c*
 	@printf "Compiling $@...\n"
 	@$(CC) $(CCOBJFLAG) -o $@ $<
-	@printf "$@ compiled\n"
 
 $(DBG_PATH)/%.o: $(SRC_PATH)/%.c*
 	@printf "Compiling $@...\n"
 	@$(CC) $(CCOBJFLAG) $(DBGFLAG) -o $@ $<
-	@printf "$@ compiled\n"
 
 $(TARGET_DEBUG): $(OBJ_DEBUG)
 	@$(CC) $(CCFLAG) $(DBGFLAG) $? -o $@

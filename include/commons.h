@@ -25,7 +25,7 @@
 #define INTERRUPTION    2
 #define TIMEOUT         3
 
-#define ACK_MSG   ( (char) 'A' )
+#define ACK_MSG         ( (char) 'A' )
 #define INT_MSG         ( (char) 'B' )
 #define POSITIVE_MSG    ( (char) 'C' )
 #define NEGATIVE_MSG    ( (char) 'D' )
@@ -39,21 +39,6 @@
 #define BYTES_IN_GIGA   1073741824
 
 using namespace std;
-
-/* 
-    Routine for exiting the program 
-*/
-void exit_routine            ( void );
-
-/* 
-    Routine for handle errors in the program 
-*/
-void error_routine           ( void );
-
-/*
-    Routine for handle interruptions in the program
-*/
-void interruption_routine    ( void );
 
 /*
     Routine for handle timeouts in the program

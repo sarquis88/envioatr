@@ -8,8 +8,10 @@ main( )
     string input;
     struct sigaction sa;
     bool keep;
+    int code, ret;
 
-    keep = false;
+    keep = true;
+    ret = SUCCES;
 
     sa.sa_handler = int_exit;
 	sigaction(SIGINT, &sa,  NULL);
@@ -36,45 +38,57 @@ main( )
         switch ( input[0] )
         {
             case SENDER_CODE:
-                launch_sender();
-                keep = false;
+                code = launch_sender();
+                if( code == FAILURE )
+                {
+                    keep = false;
+                    ret = FAILURE;
+                }
+                else if( code == INTERRUPTION )
+                    interruption_routine();
                 break;
             case RECEIVER_CODE:
-                launch_receiver();
-                keep = false;
+                code = launch_receiver();
+                if( code == FAILURE )
+                {
+                    keep = false;
+                    ret = FAILURE;
+                }
+                else if( code == INTERRUPTION )
+                    interruption_routine();
                 break;
             case CLEAN_CODE:
                 if( clean_reception_folder() )
                     cout << endl << "Reception directory cleaned" << endl;
                 else
                     cout << endl << "Empty directory" << endl;
-                exit_routine();
-                keep = false;
                 break;
             case NAME_CODE:
                 cout << endl << "Enter new username: (one word)" << endl;
                 user_input( &input );
                 if( set_host_name( &input ) == FAILURE )
                 {
-                    error_routine();
-                    exit_routine();
-                    return FAILURE;
+                    ret = FAILURE;
+                    keep = false;
                 }
-                cout << "Username has been changed to " << input << endl;
-                keep = true;
+                else
+                    cout << "Username has been changed to " << input << endl;
                 break;
             case EXIT_CODE:
-                exit_routine();
                 keep = false;
                 break;
             default:
                 cout << "Bad answer" << endl;
-                keep = true;
                 break;
         }
     } while( keep );
 
-    return SUCCES;
+    if( ret == FAILURE )
+        error_routine();
+
+    exit_routine();
+
+    return ret;
 }
 
 void
@@ -132,4 +146,23 @@ get_host_name( string * buffer )
 
     free( aux );
     return SUCCES;
+}
+
+void
+exit_routine()
+{
+    cout << endl << "Bye!" << endl << endl;
+}
+
+void
+error_routine()
+{
+    cout << endl;
+    perror("ERROR: something went wrong");
+}
+
+void
+interruption_routine()
+{
+    cout << endl << "INTERRUPTION: some part of the transmission has been disconnected" << endl;;
 }

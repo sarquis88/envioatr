@@ -35,49 +35,26 @@ launch_receiver()
         cout << "Looking for sender..." << endl;
         code = connect_to_sender( buffer_B );
         if( code == FAILURE )
-        {
-            error_routine();
             return FAILURE;
-        }
         else if( code == TIMEOUT )
         {
             timeout_routine();
-            exit_routine();
             return SUCCES;
         }
         code = receive_message_from_sender( &buffer_A );
         if( code == FAILURE )
-        {
-            error_routine();
             return FAILURE;
-        }
         cout << "Sender founded" << endl;
 
         /* Reception of file metadata */
         cout << "Receiving metadata..." << endl;
         code = receive_message_from_sender( &buffer_A );    // file name reception
-        if( code == FAILURE )
-        {
-            error_routine();
-            return FAILURE;
-        }
-        else if( code == INTERRUPTION )
-        {
-            interruption_routine();
-            return SUCCES;
-        }
+        if( code != SUCCES )
+            return code;
         send_ack_to_sender();
         code = receive_message_from_sender( &buffer_B );    // file size reception
-        if( code == FAILURE )
-        {
-            error_routine();
-            return FAILURE;
-        }
-        else if( code == INTERRUPTION )
-        {
-            interruption_routine();
-            return SUCCES;
-        }
+        if( code != SUCCES )
+            return code;
         send_ack_to_sender();
         cout << "Metadata received" << endl;
 
@@ -100,15 +77,11 @@ launch_receiver()
                 send_message_to_sender( &buffer_B );
                 cout << "Receiving " << '"' << buffer_A << '"' << " from sender..." << endl;
                 code = receive_file_from_sender( &buffer_A, size );
-                if( code == FAILURE )
+                if( code != SUCCES )
                 {
-                    error_routine();
-                    return FAILURE;
-                }
-                else if( code == INTERRUPTION )
-                {
-                    interruption_routine();
-                    return SUCCES;
+                    if( code == INTERRUPTION )
+                        delete_corrupt_file( &buffer_A );
+                    return code;
                 }
                 else
                 {
@@ -138,7 +111,6 @@ launch_receiver()
 
     /* End of receiver program */
     close_receiver_connection();
-    exit_routine();
     
     return SUCCES;
 }
@@ -188,4 +160,11 @@ get_last_sender_address( string * buffer )
 
     free( aux );
     return SUCCES;
+}
+
+void
+delete_corrupt_file( string * path )
+{   
+    string file = "./receptions/" + *path;
+    filesystem::remove( file );
 }
