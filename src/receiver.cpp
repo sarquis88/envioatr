@@ -2,8 +2,6 @@
 
 using namespace std;
 
-// TODO: aceptar archiv
-
 int main()
 {
     bool keep;
