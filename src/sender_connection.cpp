@@ -45,7 +45,7 @@ send_file_to_receiver( string file_path )
 		char *buffer = (char *)malloc( BUFFER_SIZE * sizeof( char ) );
 
 		while( fread( buffer, sizeof(char), 1, file) > 0 )
-			send( s_sock_receiver, buffer, 1, 0);
+			send( s_sock_receiver, buffer, 1, 0 );
 
 		fclose( file );
 		free( buffer );
@@ -63,7 +63,7 @@ close_sender_connection()
 }
 
 int
-send_message_to_receiver( string message )
+send_message_to_receiver( string * message )
 {
 	return send_message( message, s_sock_receiver );
 }
@@ -72,4 +72,11 @@ int
 receive_message_from_receiver( string * buffer )
 {
 	return receive_message( buffer, s_sock_receiver );
+}
+
+int
+send_ack_to_receiver()
+{
+	string buffer = string(1, ACK_MSG );
+	return send_message_to_receiver( &buffer );
 }

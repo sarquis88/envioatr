@@ -24,7 +24,7 @@
 #define INTERRUPTION    2
 #define TIMEOUT         3
 
-#define HANDSHAKE_MSG   ( (char) 'A' )
+#define ACK_MSG   ( (char) 'A' )
 #define INT_MSG         ( (char) 'B' )
 #define POSITIVE_MSG    ( (char) 'C' )
 #define NEGATIVE_MSG    ( (char) 'D' )
@@ -73,7 +73,7 @@ void user_input             ( string * );
             FAILURE on case of an error
             INTERRUPTION on case of an interruptio
 */
-int send_message                ( string, int );
+int send_message                ( string *, int );
 
 /*
     Reception of message from the socket

@@ -25,4 +25,4 @@ int get_last_sender_address ( string * buffer );
     @param  SUCCES on succes operation
             FAILURE in other case
 */
-int set_last_sender_address ( string address );
+int set_last_sender_address ( string * address );

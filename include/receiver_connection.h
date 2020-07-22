@@ -12,7 +12,7 @@ using namespace std;
     @return SUCCES on a succesfully connection
             FAILURE on case of an error
 */
-int connect_to_sender           ( string * ); 
+int connect_to_sender           ( string ); 
 
 /*
     Reception of file from sender part
@@ -49,9 +49,14 @@ bool validate_address           ( string * );
 /*
     Send message to sender
 */
-int send_message_to_sender      ( string );
+int send_message_to_sender      ( string * );
 
 /*
     Reception of message from the sender
 */
-int receive_message_from_sender   ( string * );
+int receive_message_from_sender ( string * );
+
+/*
+    Wrapper from send_message_to_sender. Sends ACK message
+*/
+int send_ack_to_sender          ( void );

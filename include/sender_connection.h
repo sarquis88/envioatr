@@ -34,9 +34,14 @@ void close_sender_connection    ( void );
 /*
     Send message to the receiver
 */
-int send_message_to_receiver    ( string );
+int send_message_to_receiver    ( string * );
 
 /*
     Reception of message from the receiver
 */
 int receive_message_from_receiver   ( string * );
+
+/*
+    Wrapper of send_message_to_receiver. Send ACK message
+*/
+int send_ack_to_receiver            ( void );

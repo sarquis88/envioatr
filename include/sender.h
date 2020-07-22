@@ -20,7 +20,7 @@ string get_file_name    ( string, size_t );
     @param  path to the file
     @return file's size in ssize_t format
 */
-ssize_t get_file_size   ( string * );
+ssize_t get_file_size   ( string );
 
 /*
     Interruption routine
@@ -34,4 +34,4 @@ void int_exit           ( int );
     @return true if exists
             false if not
 */
-bool file_exists        ( string * );
+bool file_exists        ( string );

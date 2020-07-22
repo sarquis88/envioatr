@@ -7,11 +7,11 @@ struct sockaddr_in r_sender_addr;
 struct hostent *r_sender_hostent;
 
 int
-connect_to_sender( string * sender_ip) 
+connect_to_sender( string sender_ip) 
 {
     int err, c;
 
-    r_sender_hostent = gethostbyname( sender_ip->c_str() );
+    r_sender_hostent = gethostbyname( sender_ip.c_str() );
 	r_sock_sender = socket( AF_INET, SOCK_STREAM, 0 );
 	memset( (char *) &r_sender_addr, '0', sizeof(r_sender_addr) );
 	r_sender_addr.sin_family = AF_INET;
@@ -132,7 +132,7 @@ validate_address( string * address )
 }
 
 int
-send_message_to_sender( string message )
+send_message_to_sender( string * message )
 {
 	return send_message( message, r_sock_sender );
 }
@@ -141,4 +141,11 @@ int
 receive_message_from_sender( string * buffer )
 {
 	return receive_message( buffer, r_sock_sender );
+}
+
+int
+send_ack_to_sender()
+{
+    string buffer = string(1, ACK_MSG );
+    return send_message_to_sender( &buffer );
 }

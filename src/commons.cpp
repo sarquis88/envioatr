@@ -11,8 +11,8 @@ exit_routine()
 void
 error_routine()
 {
-    cout << endl << "ERROR: something went wrong" << endl;;
-    perror("");
+    cout << endl;
+    perror("ERROR: something went wrong");
     exit_routine();
 }
 
@@ -34,11 +34,11 @@ user_input( string *input_buffer )
 }
 
 int
-send_message( string message , int socket )
+send_message( string * message , int socket )
 {
 	int n;
 
-	n = (int) send( socket, message.c_str(), message.length(), 0 );
+	n = (int) send( socket, message->c_str(), message->length(), 0 );
 	if ( n < 0 ) 
 		return FAILURE;
 	else

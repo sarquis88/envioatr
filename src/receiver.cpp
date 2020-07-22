@@ -13,28 +13,28 @@ int main()
     do 
     {
         /* Varbiales declaration */
-        string file_name, file_size, buffer, sender_ip, last_sender_ip;
+        string buffer_A, buffer_B;
         int size, code;
 
         /* Getting last sender ip */
-        get_last_sender_address( &last_sender_ip );
+        get_last_sender_address( &buffer_A );
         
         /* Search of sender */
-        cout << "Sender's IP:" << "(enter 'd' for " << last_sender_ip << ")" << endl;
+        cout << "Sender's IP:" << "(enter 'd' for " << buffer_A << ")" << endl;
         do
         {
-            user_input( &sender_ip );
-            if( sender_ip.at(0) == 'd' )
+            user_input( &buffer_B );
+            if( buffer_B.at(0) == 'd' )
             {
-                sender_ip = last_sender_ip;
+                buffer_B = buffer_A;
                 break;
             }
-        } while( !validate_address( &sender_ip ) );
+        } while( !validate_address( &buffer_B ) );
 
-        set_last_sender_address( sender_ip );
+        set_last_sender_address( &buffer_B );
 
         cout << "Looking for sender..." << endl;
-        code = connect_to_sender( &sender_ip );
+        code = connect_to_sender( buffer_B );
         if( code == FAILURE )
         {
             error_routine();
@@ -46,7 +46,7 @@ int main()
             exit_routine();
             return SUCCES;
         }
-        code = receive_message_from_sender( &buffer );
+        code = receive_message_from_sender( &buffer_A );
         if( code == FAILURE )
         {
             error_routine();
@@ -56,7 +56,7 @@ int main()
 
         /* Reception of file metadata */
         cout << "Receiving metadata..." << endl;
-        code = receive_message_from_sender( &file_name );
+        code = receive_message_from_sender( &buffer_A );    // file name reception
         if( code == FAILURE )
         {
             error_routine();
@@ -67,8 +67,8 @@ int main()
             interruption_routine();
             return SUCCES;
         }
-        send_message_to_sender( string(1, HANDSHAKE_MSG ) );
-        code = receive_message_from_sender( &file_size );
+        send_ack_to_sender();
+        code = receive_message_from_sender( &buffer_B );    // file size reception
         if( code == FAILURE )
         {
             error_routine();
@@ -79,26 +79,28 @@ int main()
             interruption_routine();
             return SUCCES;
         }
-        send_message_to_sender( string(1, HANDSHAKE_MSG ) );
+        send_ack_to_sender();
         cout << "Metadata received" << endl;
 
         /* Confirmation of reception */
-        size = stoi( file_size );
-        cout << "Donwload file " << '"' << file_name << '"' << " (" << 
+        size = stoi( buffer_B );
+        cout << "Donwload file " << '"' << buffer_A << '"' << " (" << 
                 get_size_message( size ) << ")?[y/n]" << endl;
         while( true ) 
         {
-            user_input( &buffer );
-            if( buffer[0] == 'n' )
+            user_input( &buffer_B );
+            if( buffer_B[0] == 'n' )
             {
-                send_message_to_sender( string(1, NEGATIVE_MSG) );
+                buffer_B = string( 1, NEGATIVE_MSG );
+                send_message_to_sender( &buffer_B );
             }
-            else if( buffer[0] == 'y' )
+            else if( buffer_B[0] == 'y' )
             {
                 /* Reception of file */
-                send_message_to_sender( string(1, POSITIVE_MSG) );
-                cout << "Receiving " << '"' << file_name << '"' << " from sender..." << endl;
-                code = receive_file_from_sender( &file_name, size );
+                buffer_B = string( 1, POSITIVE_MSG );
+                send_message_to_sender( &buffer_B );
+                cout << "Receiving " << '"' << buffer_A << '"' << " from sender..." << endl;
+                code = receive_file_from_sender( &buffer_A, size );
                 if( code == FAILURE )
                 {
                     error_routine();
@@ -121,13 +123,13 @@ int main()
         while( true )
         {
             cout << endl << "Do you want to receive more files?[y/n]" << endl;
-            user_input( &buffer );
-            if( buffer[0] == 'y' )
+            user_input( &buffer_A );
+            if( buffer_A[0] == 'y' )
             {
                 keep = true;
                 break;
             }
-            else if( buffer[0] == 'n' )
+            else if( buffer_A[0] == 'n' )
             {
                 keep = false;
                 break;
@@ -160,12 +162,12 @@ get_size_message( int size )
 }
 
 int 
-set_last_sender_address( string address )
+set_last_sender_address( string * address )
 {
     ofstream file;
     
     file.open( LAST_SENDER_ADDRESS_FILE );
-    file << address << endl;
+    file << *address << endl;
     file.close();
 
     return SUCCES;

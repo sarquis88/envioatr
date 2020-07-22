@@ -7,7 +7,7 @@ main()
 {   /* Variables declarations */
     bool keep;
     struct sigaction sa;
-    string buffer;
+    string buffer_A, buffer_B;
 
     /* Variables initialization */
     sa.sa_handler = int_exit;
@@ -16,8 +16,8 @@ main()
     
     /* Configuring connection */
     cout << "Establishing connection..." << endl;
-    if( setup_connection( &buffer ) == SUCCES )
-        cout << "Connection established in " << buffer << endl;
+    if( setup_connection( &buffer_A ) == SUCCES )
+        cout << "Connection established in " << buffer_A << endl;
     else
     {
         error_routine();
@@ -28,56 +28,53 @@ main()
     do
     {
         /* Variables declarations */
-        string source_path, buffer, receiver_address;
-        ssize_t file_size;
+        ssize_t size;
         int code;
 
         /* Connected and waiting for receiver */
         cout << "Waiting for receiver in..." << endl;
-        receiver_address = listen();
+        buffer_A = listen();
         
         /* Connection established with receiver */
-        cout << "Receiver founded: " << receiver_address << endl;
-        if( send_message_to_receiver( string(1, HANDSHAKE_MSG ) ) == FAILURE )
-        {
-            error_routine();
-            return FAILURE;
-        }
+        cout << "Receiver founded: " << buffer_A << endl;
+        send_ack_to_receiver();
 
         /* File selection and name transmission */
         cout << "File name to transfer:" << endl;
         while( true )
         {
-            user_input( &source_path );
-            if( file_exists( &source_path ) )
+            user_input( &buffer_A );
+            if( file_exists( buffer_A ) )
                 break;
             else
                 cout << "File doesn't exists, try again:" << endl;
         }
-        if( send_message_to_receiver( get_file_name( source_path, source_path.length() ) ) == FAILURE )
+        buffer_B = get_file_name( buffer_A, buffer_A.length() );
+        if( send_message_to_receiver( &buffer_B ) == FAILURE )
         {
             error_routine();
             return FAILURE;
         }
-        receive_message_from_receiver( &buffer );
+        receive_message_from_receiver( &buffer_B );
         
         /* Files size transmission */
-        file_size = get_file_size( &source_path );
-        if( file_size <= 0 )
+        size = get_file_size( buffer_A );
+        buffer_B = to_string( size );
+        if( size <= 0 )
         {
             error_routine();
             return FAILURE;
         }
-        else if( send_message_to_receiver( to_string( file_size ) ) == FAILURE )
+        else if( send_message_to_receiver( &buffer_B ) == FAILURE )
         {
             error_routine();
             return FAILURE;
         }
-        receive_message_from_receiver( &buffer );
+        receive_message_from_receiver( &buffer_B );
 
         /* Waits for acceptation */
         cout << "Waiting for confirmation from receiver..." << endl;
-        code = receive_message_from_receiver( &buffer );
+        code = receive_message_from_receiver( &buffer_B );
         if( code == FAILURE )
         {
             error_routine();
@@ -90,11 +87,11 @@ main()
         }
         else
         {
-            if( buffer.at(0) == POSITIVE_MSG )
+            if( buffer_B.at(0) == POSITIVE_MSG )
             {
                 /* File transmission */
                 cout << "Sending file..." << endl;
-                if( send_file_to_receiver( source_path ) == FAILURE )
+                if( send_file_to_receiver( buffer_A ) == FAILURE )
                 {
                     error_routine();
                     return FAILURE;
@@ -102,7 +99,7 @@ main()
                 else
                     cout << "File has been sended" << endl;
             }
-            else if( buffer.at(0) == NEGATIVE_MSG )
+            else if( buffer_B.at(0) == NEGATIVE_MSG )
             {
                 cout << "Receiver has declined the file" << endl;
             }
@@ -112,13 +109,13 @@ main()
         while( true )
         {
             cout << endl << "Do you want to send more files?[y/n]" << endl;
-            user_input( &buffer );
-            if( buffer[0] == 'y' )
+            user_input( &buffer_A );
+            if( buffer_A[0] == 'y' )
             {
                 keep = true;
                 break;
             }
-            else if( buffer[0] == 'n' )
+            else if( buffer_A[0] == 'n' )
             {
                 keep = false;
                 break;
@@ -156,12 +153,12 @@ get_file_name( string path_to_file, size_t len )
 }
 
 ssize_t
-get_file_size( string *file_path )
+get_file_size( string file_path )
 {
     FILE* file;
     ssize_t size;
 
-    file = fopen( file_path->c_str(), "rb" );
+    file = fopen( file_path.c_str(), "rb" );
     size = 0;
 
     if( file != NULL ) 
@@ -179,7 +176,8 @@ int_exit( int sig )
 {
 	if( sig > 0 ) 
     {
-		send_message_to_receiver( to_string(INT_MSG) );
+        string buffer = string( 1, INT_MSG );
+		send_message_to_receiver( &buffer );
 	}
     close_sender_connection();
     exit_routine();
@@ -187,8 +185,8 @@ int_exit( int sig )
 }
 
 bool
-file_exists( string *file_path )
+file_exists( string file_path )
 {
     struct stat stat_struct;
-    return ( stat( file_path->c_str(), &stat_struct) == 0 ); 
+    return ( stat( file_path.c_str(), &stat_struct) == 0 ); 
 }
