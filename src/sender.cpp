@@ -7,6 +7,7 @@ main()
 {   /* Variables declarations */
     bool keep;
     struct sigaction sa;
+    string buffer;
 
     /* Variables initialization */
     sa.sa_handler = int_exit;
@@ -15,8 +16,8 @@ main()
     
     /* Configuring connection */
     cout << "Establishing connection..." << endl;
-    if( setup_connection() == SUCCES )
-        cout << "Connection established" << endl;
+    if( setup_connection( &buffer ) == SUCCES )
+        cout << "Connection established in " << buffer << endl;
     else
     {
         error_routine();
@@ -32,7 +33,7 @@ main()
         int code;
 
         /* Connected and waiting for receiver */
-        cout << "Waiting for receiver..." << endl;
+        cout << "Waiting for receiver in..." << endl;
         receiver_address = listen();
         
         /* Connection established with receiver */

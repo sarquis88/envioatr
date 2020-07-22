@@ -6,10 +6,11 @@ using namespace std;
 
 /*
     Configuration of the local socket
+    @param  string buffer to store the sender address
     @return SUCCES on a succesfully operation
             FAILURE on case of an error
 */
-int setup_connection            ( void ); 
+int setup_connection            ( string * ); 
 
 /*
     Waiting for the receiver

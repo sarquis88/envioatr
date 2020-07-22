@@ -1,5 +1,5 @@
 CC := g++
-CCFLAG := -Wall -Werror -pedantic -Wextra -Wconversion -g
+CCFLAG := -std=c++11 -Wall -Werror -pedantic -Wextra -Wconversion -g
 CPPFLAG = --enable=all --suppress=missingIncludeSystem -q
 
 make:

@@ -8,18 +8,21 @@ struct sockaddr_in s_sender_addr;
 struct sockaddr_in s_receiver_addr;
 
 int
-setup_connection() 
+setup_connection( string *address ) 
 {
 	s_sock_sender = socket( AF_INET, SOCK_STREAM, 0);
 	memset( (char *) &s_sender_addr, 0, sizeof( s_sender_addr ) );
 
 	s_sender_addr.sin_family = AF_INET;
-	s_sender_addr.sin_addr.s_addr = inet_addr( IP_SERVER );
+	s_sender_addr.sin_addr.s_addr = INADDR_ANY;
 	s_sender_addr.sin_port = htons( (uint16_t) PORT );
 	if ( bind( s_sock_sender, ( struct sockaddr *) &s_sender_addr, sizeof( s_sender_addr ) ) < 0 )
 		return FAILURE;
     else
-        return SUCCES;
+	{
+		*address = inet_ntoa( s_sender_addr.sin_addr );
+		return SUCCES;
+	}        
 }
 
 string
