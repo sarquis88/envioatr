@@ -4,6 +4,8 @@ using namespace std;
 
 #define LOG         1
 
+#define TTL         8
+
 /*
     Try to connect to the sender part
     @param  sender's ip direction

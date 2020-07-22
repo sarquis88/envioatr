@@ -64,3 +64,9 @@ receive_message( string * message_buffer, int socket )
     else
         return SUCCES;
 }
+
+void
+timeout_routine()
+{
+    cout << "Timeout" << endl;
+}

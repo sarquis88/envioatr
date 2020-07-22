@@ -22,6 +22,7 @@
 #define SUCCES          0
 #define FAILURE         1
 #define INTERRUPTION    2
+#define TIMEOUT         3
 
 #define HANDSHAKE_MSG   ( (char) 'A' )
 #define INT_MSG         ( (char) 'B' )
@@ -54,10 +55,15 @@ void error_routine           ( void );
 void interruption_routine    ( void );
 
 /*
+    Routine for handle timeouts in the program
+*/
+void timeout_routine        ( void );
+
+/*
     Input stream for the user
     @param  buffer to store de input string
 */
-void user_input         ( string * );
+void user_input             ( string * );
 
 /*
     Sent of message to the socket

@@ -9,7 +9,7 @@ struct hostent *r_sender_hostent;
 int
 connect_to_sender( string * sender_ip) 
 {
-    int err;
+    int err, c;
 
     r_sender_hostent = gethostbyname( sender_ip->c_str() );
 	r_sock_sender = socket( AF_INET, SOCK_STREAM, 0 );
@@ -18,6 +18,7 @@ connect_to_sender( string * sender_ip)
 	bcopy( (char *)r_sender_hostent->h_addr, (char *)&r_sender_addr.sin_addr.s_addr, (size_t )r_sender_hostent->h_length );
 	r_sender_addr.sin_port = htons( (uint16_t) PORT );
 
+    c = 0;
     while( true )
     {
         if ( connect( r_sock_sender, (struct sockaddr *)&r_sender_addr, sizeof(r_sender_addr ) ) == 0 )
@@ -26,7 +27,12 @@ connect_to_sender( string * sender_ip)
         {
             err = errno;
             if( err == ECONNREFUSED )   // sender is not connected -> keep waiting
+            {
                 sleep(1);
+                c++;
+                if( c == TTL )
+                    return TIMEOUT;
+            }
             else
                 return FAILURE;         // another error
         }

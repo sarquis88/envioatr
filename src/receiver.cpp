@@ -34,7 +34,18 @@ int main()
         set_last_sender_address( sender_ip );
 
         cout << "Looking for sender..." << endl;
-        connect_to_sender( &sender_ip );
+        code = connect_to_sender( &sender_ip );
+        if( code == FAILURE )
+        {
+            error_routine();
+            return FAILURE;
+        }
+        else if( code == TIMEOUT )
+        {
+            timeout_routine();
+            exit_routine();
+            return SUCCES;
+        }
         code = receive_message_from_sender( &buffer );
         if( code == FAILURE )
         {
