@@ -1,4 +1,4 @@
-#include "commons.h"
+#include "../../common/commons.h"
 
 #define SENDER_BIN      "./sender/bin/sender"
 #define RECEIVER_BIN    "./receiver/bin/receiver"

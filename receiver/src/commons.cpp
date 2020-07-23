@@ -1,3 +1,4 @@
+ 
 #include "../include/commons.h"
 
 using namespace std;
@@ -73,4 +74,81 @@ print_load_pane( double factor )
     free( pane );
 
     cout << '\r' << "[" << pane_str << "]" << flush;
+}
+
+
+void
+int_exit( int sig ) 
+{
+	if( sig > 0 ) 
+    {
+        exit_routine();
+        exit(SUCCES);
+	}
+}
+
+bool
+clean_reception_folder()
+{
+    string path;
+    bool clean = false;
+
+    path = RECEPTION_DIR;
+    
+    for (const auto & entry : filesystem::directory_iterator( path ) )
+    {
+        clean = true;
+        filesystem::remove( entry.path() );
+    }
+
+    return clean;
+}
+
+int 
+set_host_name( string * name )
+{
+    ofstream file;
+    
+    file.open( HOST_NAME_FILE );
+    file << *name << endl;
+    file.close();
+
+    return SUCCES;
+}
+
+int 
+get_host_name( string * buffer )
+{
+    ifstream file;
+    char *aux;
+
+    aux = (char*)malloc( BUFFER_SIZE * sizeof(char) );
+    
+    file.open( HOST_NAME_FILE );
+    file >> aux;
+    file.close();
+
+    *buffer = string( aux );
+
+    free( aux );
+    return SUCCES;
+}
+
+void
+exit_routine()
+{
+    cout << endl << "Bye!" << endl << endl;
+}
+
+void
+error_routine()
+{
+    cout << endl;
+    perror("ERROR: something went wrong");
+}
+
+void
+interruption_routine()
+{
+    cout << endl << "INTERRUPTION: some part of the transmission has been disconnected" << endl;;
 }
