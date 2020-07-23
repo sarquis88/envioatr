@@ -85,3 +85,13 @@ main( int argc, char *argv[] )
 
     return ret;
 }
+
+void
+int_exit( int sig ) 
+{
+	if( sig > 0 ) 
+    {
+        exit_routine();
+        exit(SUCCES);
+	}
+}

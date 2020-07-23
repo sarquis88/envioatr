@@ -9,3 +9,9 @@
 #define NAME_CODE       '3'
 #define CHAT_CODE       '4'
 #define EXIT_CODE       '5'
+
+/*
+    Interruption routine
+    @param  (unknown, to keep the compiler happy)
+*/
+void int_exit               ( int );

@@ -31,3 +31,9 @@ int set_last_sender_address ( string * address );
     Delete interrupted file
 */
 void delete_corrupt_file    ( string * path );
+
+/*
+    Interruption routine
+    @param  (unknown, to keep the compiler happy)
+*/
+void int_exit               ( int );

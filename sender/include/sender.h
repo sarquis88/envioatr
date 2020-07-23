@@ -29,3 +29,9 @@ ssize_t get_file_size   ( string );
             false if not
 */
 bool file_exists        ( string );
+
+/*
+    Interruption routine
+    @param  (unknown, to keep the compiler happy)
+*/
+void int_exit               ( int );

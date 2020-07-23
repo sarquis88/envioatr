@@ -6,20 +6,26 @@ int
 main() 
 {   
     /* Variables declarations */
-    bool keep;
+    bool keep, no_error;
+    int return_value;
+    struct sigaction sa;
     string buffer_A, buffer_B;
 
     /* Variables initialization */
     keep = false;
+    no_error = true;
+    sa.sa_handler = int_exit;
+
+    /* SIGINT handler */
+	sigaction(SIGINT, &sa,  NULL);
     
     /* Configuring connection */
     cout << endl << "Establishing connection..." << endl;
     if( setup_connection( &buffer_A ) == SUCCES )
         cout << "Connection established in " << buffer_A << endl;
     else
-        return FAILURE;
+        no_error = false;
 
-    /* Program loop initialization */
     do
     {
         /* Variables declarations */
@@ -27,84 +33,113 @@ main()
         int code;
 
         /* Connected and waiting for receiver */
-        cout << "Waiting for receiver in..." << endl;
-        buffer_A = listen();
-        
-        /* Connection established with receiver */
-        cout << "Receiver founded: " << buffer_A << endl;
-        send_ack_to_receiver();
+        if( no_error )
+        {
+            cout << "Waiting for receiver..." << endl;
+            buffer_A = listen();
+            cout << "Receiver founded: " << buffer_A << endl;
+            send_ack_to_receiver();
+        }   
 
         /* File selection and name transmission */
-        cout << "File name to transfer:" << endl;
-        while( true )
+        if( no_error )
         {
-            user_input( &buffer_A );
-            if( file_exists( buffer_A ) )
-                break;
+            cout << "File name to transfer:" << endl;
+            while( true )
+            {
+                user_input( &buffer_A );
+                if( file_exists( buffer_A ) )
+                    break;
+                else
+                    cout << "File doesn't exists, try again:" << endl;
+            }
+            buffer_B = get_file_name( buffer_A, buffer_A.length() );
+            if( send_message_to_receiver( &buffer_B ) == FAILURE )
+                no_error = false;
             else
-                cout << "File doesn't exists, try again:" << endl;
+                receive_message_from_receiver( &buffer_B );
         }
-        buffer_B = get_file_name( buffer_A, buffer_A.length() );
-        if( send_message_to_receiver( &buffer_B ) == FAILURE )
-            return FAILURE;
-        receive_message_from_receiver( &buffer_B );
         
         /* Files size transmission */
-        size = get_file_size( buffer_A );
-        buffer_B = to_string( size );
-        if( size <= 0 )
-            return FAILURE;
-        else if( send_message_to_receiver( &buffer_B ) == FAILURE )
-            return FAILURE;
-        receive_message_from_receiver( &buffer_B );
+        if( no_error )
+        {
+            size = get_file_size( buffer_A );
+            buffer_B = to_string( size );
+            if( size <= 0 )
+                no_error = false;
+            else if( send_message_to_receiver( &buffer_B ) == FAILURE )
+                no_error = false;
+            else
+                receive_message_from_receiver( &buffer_B );
+        }
 
         /* Waits for acceptation */
-        cout << "Waiting for confirmation from receiver..." << endl;
-        code = receive_message_from_receiver( &buffer_B );
-        if( code == FAILURE )
-            return FAILURE;
-        else if( code == INTERRUPTION )
-            return INTERRUPTION;
-        else
+        if( no_error )
         {
-            if( buffer_B.at(0) == POSITIVE_MSG )
+            cout << "Waiting for confirmation from receiver..." << endl;
+            code = receive_message_from_receiver( &buffer_B );
+            if( code != SUCCES )
             {
-                /* File transmission */
-                cout << "Sending file..." << endl;
-                if( send_file_to_receiver( buffer_A ) == FAILURE )
-                    return FAILURE;
-                else
-                    cout << "File has been sended" << endl;
+                if( code == INTERRUPTION )
+                    interruption_routine();
+                no_error = false;
             }
-            else if( buffer_B.at(0) == NEGATIVE_MSG )
+            else
             {
-                cout << "Receiver has declined the file" << endl;
+                if( buffer_B.at(0) == POSITIVE_MSG )
+                {
+                    /* File transmission */
+                    cout << "Sending file..." << endl;
+                    if( send_file_to_receiver( buffer_A ) == FAILURE )
+                        return FAILURE;
+                    else
+                        cout << "File has been sended" << endl;
+                }
+                else if( buffer_B.at(0) == NEGATIVE_MSG )
+                {
+                    cout << "Receiver has declined the file" << endl;
+                }
             }
         }
 
         /* Ask for continuing */
-        while( true )
+        if( no_error )
         {
-            cout << endl << "Do you want to send more files?[y/n]" << endl;
-            user_input( &buffer_A );
-            if( buffer_A[0] == 'y' )
+            while( true )
             {
-                keep = true;
-                break;
-            }
-            else if( buffer_A[0] == 'n' )
-            {
-                keep = false;
-                break;
+                cout << endl << "Do you want to send more files?[y/n]" << endl;
+                user_input( &buffer_A );
+                if( buffer_A[0] == 'y' )
+                {
+                    keep = true;
+                    break;
+                }
+                else if( buffer_A[0] == 'n' )
+                {
+                    keep = false;
+                    break;
+                }
             }
         }
         
+        /* Check for errors */
+        if( !no_error )
+            break;
+
     } while( keep );
 
-    /* End of sender program */
+    /* Exit routines */
     close_sender_connection();
-
-    return SUCCES;
+    if( !no_error )
+    {
+        error_routine();
+        return_value = FAILURE;
+    }
+    else
+        return_value = SUCCES;
+    exit_routine();
+    
+    return return_value;
 }
 
 string
@@ -152,4 +187,16 @@ file_exists( string file_path )
 {
     struct stat stat_struct;
     return ( stat( file_path.c_str(), &stat_struct) == 0 ); 
+}
+
+void
+int_exit( int sig ) 
+{
+	if( sig > 0 ) 
+    {
+        string buffer = string(1, INT_MSG );
+	    send_message_to_receiver( &buffer );
+        exit_routine();
+        exit(SUCCES);
+	}
 }

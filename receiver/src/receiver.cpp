@@ -5,9 +5,18 @@ using namespace std;
 int 
 main()
 {
-    bool keep;
+    /* Varbiales declaration */
+    bool keep, no_error, no_interruption, no_timeout;
+    int return_value;
+    struct sigaction sa;
 
+    /* Varbiales initialization */
     keep = false;
+    no_error = true;
+    sa.sa_handler = int_exit;
+
+    /* SIGINT handler */
+	sigaction(SIGINT, &sa,  NULL);
 
     do 
     {
@@ -15,104 +24,180 @@ main()
         string buffer_A, buffer_B;
         int size, code;
 
+        /* Varbiales initialization */
+        code = 0;
+        no_interruption = true;
+        no_timeout = true;
+
         /* Getting last sender ip */
         get_last_sender_address( &buffer_A );
         
-        /* Search of sender */
-        cout << "Sender's IP:" << "(enter 'd' for " << buffer_A << ")" << endl;
-        do
+        /* Input of sender address */
+        if( no_error && no_interruption && no_timeout )
         {
-            user_input( &buffer_B );
-            if( buffer_B.at(0) == 'd' )
+            cout << "Sender's IP:" << "(enter 'd' for " << buffer_A << ")" << endl;
+            do
             {
-                buffer_B = buffer_A;
-                break;
-            }
-        } while( !validate_address( &buffer_B ) );
-
-        set_last_sender_address( &buffer_B );
-
-        cout << "Looking for sender..." << endl;
-        code = connect_to_sender( buffer_B );
-        if( code == FAILURE )
-            return FAILURE;
-        else if( code == TIMEOUT )
-        {
-            timeout_routine();
-            return SUCCES;
+                user_input( &buffer_B );
+                if( buffer_B.at(0) == 'd' )
+                {
+                    buffer_B = buffer_A;
+                    break;
+                }
+            } while( !validate_address( &buffer_B ) );
+            set_last_sender_address( &buffer_B );
         }
-        code = receive_message_from_sender( &buffer_A );
-        if( code == FAILURE )
-            return FAILURE;
-        cout << "Sender founded" << endl;
 
-        /* Reception of file metadata */
-        cout << "Receiving metadata..." << endl;
-        code = receive_message_from_sender( &buffer_A );    // file name reception
-        if( code != SUCCES )
-            return code;
-        send_ack_to_sender();
-        code = receive_message_from_sender( &buffer_B );    // file size reception
-        if( code != SUCCES )
-            return code;
-        send_ack_to_sender();
-        cout << "Metadata received" << endl;
+        /* Search of sender */
+        if( no_error && no_interruption && no_timeout  )
+        {
+            cout << "Looking for sender..." << endl;
+            code = connect_to_sender( buffer_B );
+            if( code != SUCCES )
+            {
+                if( code == INTERRUPTION )
+                    no_interruption = false;
+                else if( code == FAILURE )
+                    no_error = false;
+                else if( code == TIMEOUT )
+                    no_timeout = false;
+            }
+        }
+
+        /* Waiting for sender's reply */
+        if( no_error && no_interruption && no_timeout  )
+        {
+            code = receive_message_from_sender( &buffer_A );
+            if( code != SUCCES )
+            {
+                if( code == INTERRUPTION )
+                    no_interruption = false;
+                else if( code == FAILURE )
+                    no_error = false;
+            }
+            else
+                cout << "Sender founded" << endl;
+        }
+
+        /* Reception of file name */
+        if( no_error && no_interruption && no_timeout  )
+        {
+            cout << "Receiving metadata..." << endl;
+            code = receive_message_from_sender( &buffer_A );    // file name reception
+            if( code != SUCCES )
+            {
+                if( code == INTERRUPTION )
+                    no_interruption = false;
+                else if( code == FAILURE )
+                    no_error = false;
+            }
+        }
+
+        /* Reception of file size */
+        if( no_error && no_interruption && no_timeout  )
+        {
+            send_ack_to_sender();
+            code = receive_message_from_sender( &buffer_B );    // file size reception
+            if( code != SUCCES )
+            {
+                if( code == INTERRUPTION )
+                    no_interruption = false;
+                else if( code == FAILURE )
+                    no_error = false;
+            }
+            else
+            {
+                send_ack_to_sender();
+                cout << "Metadata received" << endl;
+            }
+        }
 
         /* Confirmation of reception */
-        size = stoi( buffer_B );
-        cout << "Donwload file " << '"' << buffer_A << '"' << " (" << 
-                get_size_message( size ) << ")?[y/n]" << endl;
-        while( true ) 
+        if( no_error && no_interruption && no_timeout  )
         {
-            user_input( &buffer_B );
-            if( buffer_B[0] == 'n' )
+            size = stoi( buffer_B );
+            cout << "Donwload file " << '"' << buffer_A << '"' << " (" << 
+                    get_size_message( size ) << ")?[y/n]" << endl;
+            while( true ) 
             {
-                buffer_B = string( 1, NEGATIVE_MSG );
-                send_message_to_sender( &buffer_B );
-            }
-            else if( buffer_B[0] == 'y' )
-            {
-                /* Reception of file */
-                buffer_B = string( 1, POSITIVE_MSG );
-                send_message_to_sender( &buffer_B );
-                cout << "Receiving " << '"' << buffer_A << '"' << " from sender..." << endl;
-                code = receive_file_from_sender( &buffer_A, size );
-                if( code != SUCCES )
+                user_input( &buffer_B );
+                if( buffer_B[0] == 'n' )
                 {
-                    if( code == INTERRUPTION )
-                        delete_corrupt_file( &buffer_A );
-                    return code;
+                    buffer_B = string( 1, NEGATIVE_MSG );
+                    send_message_to_sender( &buffer_B );
                 }
-                else
+                else if( buffer_B[0] == 'y' )
                 {
-                    cout << "File received" << endl;
+                    /* Reception of file */
+                    buffer_B = string( 1, POSITIVE_MSG );
+                    send_message_to_sender( &buffer_B );
+                    cout << "Receiving " << '"' << buffer_A << '"' << " from sender..." << endl;
+                    code = receive_file_from_sender( &buffer_A, size );
+                    if( code != SUCCES )
+                    {
+                        if( code == INTERRUPTION )
+                        {
+                            delete_corrupt_file( &buffer_A );
+                            no_interruption = false;
+                        }
+                        else if( code == FAILURE )
+                            no_error = false;
+                    }
+                    else
+                    {
+                        cout << "File received" << endl;
+                    }
                 }
+                break;
             }
-            break;
         }
 
+        /* Check for interruptions */  
+        if( !no_interruption )
+            interruption_routine();
+
+        /* Check for timeouts */  
+        if( !no_timeout )
+            timeout_routine();
+        
         /* Ask for continuing */
-        while( true )
+        if( no_error )
         {
-            cout << endl << "Do you want to receive more files?[y/n]" << endl;
-            user_input( &buffer_A );
-            if( buffer_A[0] == 'y' )
+            while( true )
             {
-                keep = true;
-                break;
-            }
-            else if( buffer_A[0] == 'n' )
-            {
-                keep = false;
-                break;
+                cout << endl << "Do you want to receive more files?[y/n]" << endl;
+                user_input( &buffer_A );
+                if( buffer_A[0] == 'y' )
+                {
+                    keep = true;
+                    break;
+                }
+                else if( buffer_A[0] == 'n' )
+                {
+                    keep = false;
+                    break;
+                }
             }
         }
+
+        /* Check for errors */
+        if( !no_error )
+            break;
+
     } while( keep );
 
-    /* End of receiver program */
+    /* Exit routines */
     close_receiver_connection();
+    if( !no_error )
+    {
+        error_routine();
+        return_value = FAILURE;
+    }
+    else
+        return_value = SUCCES;
+    exit_routine();
     
-    return SUCCES;
+    return return_value;
 }
 
 string
@@ -167,4 +252,14 @@ delete_corrupt_file( string * path )
 {   
     string file = "./receptions/" + *path;
     filesystem::remove( file );
+}
+
+void
+int_exit( int sig ) 
+{
+	if( sig > 0 ) 
+    {
+        exit_routine();
+        exit(SUCCES);
+	}
 }

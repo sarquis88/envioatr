@@ -76,17 +76,6 @@ print_load_pane( double factor )
     cout << '\r' << "[" << pane_str << "]" << flush;
 }
 
-
-void
-int_exit( int sig ) 
-{
-	if( sig > 0 ) 
-    {
-        exit_routine();
-        exit(SUCCES);
-	}
-}
-
 bool
 clean_reception_folder()
 {
@@ -150,5 +139,5 @@ error_routine()
 void
 interruption_routine()
 {
-    cout << endl << "INTERRUPTION: some part of the transmission has been disconnected" << endl;;
+    cout << endl << "INTERRUPTION: some part of the transmission has been interrupted" << endl;;
 }

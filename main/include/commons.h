@@ -82,13 +82,6 @@ int receive_message             ( string *, int );
 */
 void print_load_pane            ( double );
 
-
-/*
-    Interruption routine
-    @param  (unknown, to keep the compiler happy)
-*/
-void int_exit               ( int );
-
 /*
     Remove all files in ./receptions/
     @return true for succes
