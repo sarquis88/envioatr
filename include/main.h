@@ -12,7 +12,8 @@
 #define RECEIVER_CODE   '1'
 #define CLEAN_CODE      '2'
 #define NAME_CODE       '3'
-#define EXIT_CODE       '4'
+#define CHAT_CODE       '4'
+#define EXIT_CODE       '5'
 
 /*
     Interruption routine

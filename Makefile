@@ -57,3 +57,7 @@ clean:
 distclean:
 	@echo CLEAN $(DISTCLEAN_LIST)
 	@rm -f $(DISTCLEAN_LIST)
+
+.PHONY: check
+check:
+	@cppcheck $(CPPFLAG) ./

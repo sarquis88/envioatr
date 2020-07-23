@@ -49,3 +49,28 @@ timeout_routine()
 {
     cout << "Timeout" << endl;
 }
+
+void
+print_load_pane( double factor )
+{
+    if( factor < 0 )
+        return;
+
+    char * pane;
+    string pane_str;
+    size_t i, percentage;
+
+    percentage = ( size_t ) ( LOAD_PANE_SIZE * factor ) ;
+
+    pane = (char*)malloc( LOAD_PANE_SIZE * sizeof(char) );
+
+    for( i = 0; i < percentage; i++ )
+        pane[i] = '#';
+    for( ; i < LOAD_PANE_SIZE; i++ )
+        pane[i] = '-';
+
+    pane_str = string( pane );
+    free( pane );
+
+    cout << '\r' << "[" << pane_str << "]" << flush;
+}

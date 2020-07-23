@@ -32,6 +32,7 @@ main( )
                         << RECEIVER_CODE    << "\t Receive file"  << endl
                         << CLEAN_CODE       << "\t Clean reception folder" << endl
                         << NAME_CODE        << "\t Change username" << endl
+                        << CHAT_CODE        << "\t Chat" << endl
                         << EXIT_CODE        << "\t Exit" << endl;
         user_input( &input );
 
@@ -73,6 +74,9 @@ main( )
                 }
                 else
                     cout << "Username has been changed to " << input << endl;
+                break;
+            case CHAT_CODE:
+                cout << endl << "Not implemented yet, pal" << endl;
                 break;
             case EXIT_CODE:
                 keep = false;

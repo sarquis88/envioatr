@@ -34,6 +34,8 @@
 
 #define BUFFER_SIZE     64
 
+#define LOAD_PANE_SIZE  50
+
 #define BYTES_IN_KILO   1024
 #define BYTES_IN_MEGA   1048576
 #define BYTES_IN_GIGA   1073741824
@@ -70,3 +72,9 @@ int send_message                ( string *, int );
             INTERRUPTION on case of an interruptio
 */
 int receive_message             ( string *, int );
+
+/*
+    Prints load pane
+    @param  percentage of loading ( 0 - 0.99 )
+*/
+void print_load_pane            ( double );
