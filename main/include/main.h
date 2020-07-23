@@ -1,7 +1,7 @@
 #include "commons.h"
 
-#define SENDER_BIN      "../sender/bin/sender"
-#define RECEIVER_BIN    "../receiver/bin/receiver"
+#define SENDER_BIN      "./sender/bin/sender"
+#define RECEIVER_BIN    "./receiver/bin/receiver"
 
 #define SENDER_CODE     '0'
 #define RECEIVER_CODE   '1'

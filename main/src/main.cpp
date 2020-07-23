@@ -42,10 +42,12 @@ main( int argc, char *argv[] )
         switch ( input[0] )
         {
             case SENDER_CODE:
-                execv( SENDER_BIN, argv );
+                if( execv( SENDER_BIN, argv ) < 0 )
+                    error_routine();
                 break;
             case RECEIVER_CODE:
-                execv( RECEIVER_BIN, argv );
+                if( execv( RECEIVER_BIN, argv ) < 0 )
+                    error_routine();
                 break;
             case CLEAN_CODE:
                 if( clean_reception_folder() )
