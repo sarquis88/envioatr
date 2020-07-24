@@ -1,0 +1,9 @@
+dd if=/dev/zero of=../test_files/byte-1   bs=1 count=1
+dd if=/dev/zero of=../test_files/byte-10  bs=1 count=10
+dd if=/dev/zero of=../test_files/byte-100 bs=1 count=100
+dd if=/dev/zero of=../test_files/kilo-1   bs=1024 count=1
+dd if=/dev/zero of=../test_files/kilo-10  bs=1024 count=10
+dd if=/dev/zero of=../test_files/kilo-100 bs=1024 count=100
+dd if=/dev/zero of=../test_files/mega-1   bs=1048576 count=1
+dd if=/dev/zero of=../test_files/mega-10  bs=1048576 count=10
+dd if=/dev/zero of=../test_files/mega-100 bs=1048576 count=100

@@ -25,8 +25,7 @@
 #define INTERRUPTION    2
 #define TIMEOUT         3
 
-#define RECEPTION_DIR   "./receptions/"
-#define HOST_NAME_FILE  "./resources/host_name.txt"
+#define RECEPTIONS_DIR   "./receptions/"
 
 #define ACK_MSG         ( (char) 'A' )
 #define INT_MSG         ( (char) 'B' )
@@ -36,12 +35,6 @@
 #define PORT            2000
 
 #define BUFFER_SIZE     64
-
-#define LOAD_PANE_SIZE  50
-
-#define BYTES_IN_KILO   1024
-#define BYTES_IN_MEGA   1048576
-#define BYTES_IN_GIGA   1073741824
 
 using namespace std;
 
@@ -75,29 +68,6 @@ int send_message                ( string *, int );
             INTERRUPTION on case of an interruptio
 */
 int receive_message             ( string *, int );
-
-/*
-    Prints load pane
-    @param  percentage of loading ( 0 - 0.99 )
-*/
-void print_load_pane            ( double );
-
-/*
-    Remove all files in ./receptions/
-    @return true for succes
-            false if the dir is empty
-*/
-bool clean_reception_folder ( void );
-
-/*
-    Get host name from host_name.txt
-*/
-int get_host_name           ( string * );
-
-/*
-    Set host name to host_name.txt
-*/
-int set_host_name           ( string * );
 
 /* 
     Routine for exiting the program 

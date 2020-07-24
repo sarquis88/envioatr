@@ -6,6 +6,12 @@ using namespace std;
 
 #define TTL         8
 
+#define LOAD_PANE_SIZE  50
+
+#define BYTES_IN_KILO   1024
+#define BYTES_IN_MEGA   1048576
+#define BYTES_IN_GIGA   1073741824
+
 /*
     Try to connect to the sender part
     @param  sender's ip direction
@@ -60,3 +66,9 @@ int receive_message_from_sender ( string * );
     Wrapper from send_message_to_sender. Sends ACK message
 */
 int send_ack_to_sender          ( void );
+
+/*
+    Prints load pane
+    @param  percentage of loading ( 0 - 0.99 )
+*/
+void print_load_pane            ( double );

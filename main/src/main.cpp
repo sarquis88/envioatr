@@ -11,7 +11,7 @@ main( int argc, char *argv[] )
     int ret;
 
     if( argc > 1 )
-        cout << endl << "We don't use any argument" << endl;
+        cout << endl << "We don't use any arguments" << endl;
 
     keep = true;
     ret = SUCCES;
@@ -94,4 +94,51 @@ int_exit( int sig )
         exit_routine();
         exit(SUCCES);
 	}
+}
+
+bool
+clean_reception_folder()
+{
+    string path;
+    bool clean = false;
+
+    path = RECEPTIONS_DIR;
+    
+    for (const auto & entry : filesystem::directory_iterator( path ) )
+    {
+        clean = true;
+        filesystem::remove( entry.path() );
+    }
+
+    return clean;
+}
+
+int 
+set_host_name( string * name )
+{
+    ofstream file;
+    
+    file.open( HOST_NAME_FILE );
+    file << *name << endl;
+    file.close();
+
+    return SUCCES;
+}
+
+int 
+get_host_name( string * buffer )
+{
+    ifstream file;
+    char *aux;
+
+    aux = (char*)malloc( BUFFER_SIZE * sizeof(char) );
+    
+    file.open( HOST_NAME_FILE );
+    file >> aux;
+    file.close();
+
+    *buffer = string( aux );
+
+    free( aux );
+    return SUCCES;
 }
