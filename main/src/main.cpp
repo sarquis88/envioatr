@@ -10,8 +10,37 @@ main( int argc, char *argv[] )
     bool keep;
     int ret;
 
+    /* Argument handlers for zenity launch */
     if( argc > 1 )
-        cout << endl << "We don't use any arguments" << endl;
+    {
+        input = string( argv[1] );
+        if( input.compare("-s") == 0 )
+        {
+            if( execv( SENDER_BIN, argv ) < 0 )
+                error_routine();
+        }
+        else if( input.compare("-r") == 0 )
+        {
+            if( execv( RECEIVER_BIN, argv ) < 0 )
+                error_routine();
+        }
+        else if( input.compare("-c") == 0 )
+        {
+            if( clean_reception_folder() )
+                cout << "Reception directory cleaned" << endl;
+            else
+                cout << "Empty directory" << endl;
+        }
+        else if( input.compare("-u") == 0 )
+        {
+            string new_name = string( argv[2] );
+            set_host_name ( &new_name );
+            cout << "Username changed succesfully" << endl;
+        }
+        else
+            cout << "Unrecognized argument" << endl;
+        return SUCCES;
+    }
 
     keep = true;
     ret = SUCCES;
@@ -35,7 +64,6 @@ main( int argc, char *argv[] )
                         << RECEIVER_CODE    << "\t Receive file"  << endl
                         << CLEAN_CODE       << "\t Clean reception folder" << endl
                         << NAME_CODE        << "\t Change username" << endl
-                        << CHAT_CODE        << "\t Chat" << endl
                         << EXIT_CODE        << "\t Exit" << endl;
         user_input( &input );
 
@@ -65,9 +93,6 @@ main( int argc, char *argv[] )
                 }
                 else
                     cout << "Username has been changed to " << input << endl;
-                break;
-            case CHAT_CODE:
-                cout << endl << "Not implemented yet, pal" << endl;
                 break;
             case EXIT_CODE:
                 keep = false;
@@ -106,8 +131,16 @@ clean_reception_folder()
     
     for (const auto & entry : filesystem::directory_iterator( path ) )
     {
-        clean = true;
-        filesystem::remove( entry.path() );
+        string gitignore;
+
+        gitignore = RECEPTIONS_DIR + string(".gitignore");
+        path = entry.path().c_str();
+
+        if( path.compare( gitignore ) != 0)
+        {
+            filesystem::remove( entry.path() );
+            clean = true;
+        }
     }
 
     return clean;
